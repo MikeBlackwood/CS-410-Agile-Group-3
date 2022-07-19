@@ -13,58 +13,6 @@ def clear_screen():
         pass                    # unrecognized system: just don't clear
 
 #————————————————————————————————————————————————————————————————————————
-#   BOX CHAR
-#
-#   Cheesey terminal graphics function to return a "box-drawing" Unicode
-#   character with the given directions. For example, you can pass in
-#   'LR' or 'rl' to make a left-right horizontal line, or 'LRD' to make
-#   a 'T' shape. etc. Valid directions are u, d, l, r.
-
-def box_char(s):
-
-    def contains_only(s, dirs):
-        s = lower(s)
-        if len(s) == len(dirs):
-            for c in s:
-                if c not in dirs:
-                    return False
-            return True
-        return False
-    
-    if   contains_only(dirs, 'l'):
-        return '╴'
-    elif contains_only(dirs, 'r'):
-        return '╶'
-    elif contains_only(dirs, 'u'):
-        return '╵'
-    elif contains_only(dirs, 'd'):
-        return '╷'
-    elif contains_only(dirs, 'lr'):
-        return '─'
-    elif contains_only(dirs, 'td'):
-        return '│'
-    elif contains_only(dirs, 'lru'):
-        return '┴'
-    elif contains_only(dirs, 'lrd'):
-        return ''
-    elif contains_only(dirs, 'tdl'):
-        return '┤'
-    elif contains_only(dirs, 'tdr'):
-        return '├'
-    elif contains_only(dirs, 'lu'):
-        return '┘'
-    elif contains_only(dirs, 'ru'):
-        return '└'
-    elif contains_only(dirs, 'ld'):
-        return '┐'
-    elif contains_only(dirs, 'rd'):
-        return '┌'
-    elif contains_only(dirs, 'lurd'):
-        return '┼'
-    else:
-        return ' '
-
-#————————————————————————————————————————————————————————————————————————
 #   FTP MENU class
 #
 
@@ -171,43 +119,53 @@ class FTP_Menu:
         clear_screen()
         
         # Some useful ANSI escape codes for awesome terminal text
-        kANSI_gray  = '\u001b[38;5;243m'
-        kANSI_reset = '\u001b[0m'
+        kANSI_esc   = '\u001b'
+        kANSI_gray  = kANSI_esc + '[38;5;243m'
+        kANSI_reset = kANSI_esc + '[0m'
         
         print(self._top_marge)
-        print(f'{self._left_marge}                ┌───────────────────────────┐')
-        print(f'{self._left_marge}                │     A G I L E   F T P     │')
-        print(f'{self._left_marge}                └───────────────────────────┘')
-        print()
-        print()
+        print(f'{self._left_marge}                  ┌───────────────────────────┐                  ')
+        print(f'{self._left_marge}┌─────────────────┤     A G I L E   F T P     ├─────────────────┐')
+        print(f'{self._left_marge}│                 └───────────────────────────┘                 │')
+        print(f'{self._left_marge}│                                                               │')
         
         for item in self.items:
             separator = kMenuFlag_separator in item[kIndex_flags]
             dimmed = separator or kMenuFlag_disabled in item[kIndex_flags]
             if dimmed:
-                print(kANSI_gray, end='')
-            if dimmed:
-                num = '   '
+                num = '     '
             else:
                 i = item[kIndex_index]
-                num = f'{i:>2}:'
+                num = f'{i:>4}: '
             
             if separator:
-                title = '————————————————————————————————————————————————————'
+                title = '—' * 48 + '      '
             else:
                 title = item[kIndex_name]
-            print(f'{self._left_marge}{num} {title}')
-
+            s = f'{num}{title}'
+            n = 59 - len(s)
+            print(f'{self._left_marge}│    ', end='')
+            if dimmed:
+                print(kANSI_gray, end='')
+            print(f'{s}{" "*n}', end='')
             if dimmed:
                 print(kANSI_reset, end='')
+            print('│')
             
-        print()
-    
+        print(f'{self._left_marge}│                                                               │')
+        print(f'{self._left_marge}│                                                               │')
+        print(f'{self._left_marge}└───────────────────────────────────────────────────────────────┘')
+
     #————————————————————————————————————————————————————————————————
     #   INPUT
     
     def input(self):
         s = input(f'{self._left_marge}Selection > ')
+        
+        # Special case so we can quit with the Q key
+        if s.lower() == 'q':
+            return kMenuID_quit
+        
         try:
             num = int(s)
             for item in self.items:
