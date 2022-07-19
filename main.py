@@ -140,7 +140,7 @@ class FTP_Menu:
                 num = f'{i:>4}: '
             
             if separator:
-                title = '—' * 48 + '      '
+                title = '─' * 48 + '      '
             else:
                 title = item[kIndex_name]
             s = f'{num}{title}'
