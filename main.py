@@ -13,6 +13,58 @@ def clear_screen():
         pass                    # unrecognized system: just don't clear
 
 #————————————————————————————————————————————————————————————————————————
+#   BOX CHAR
+#
+#   Cheesey terminal graphics function to return a "box-drawing" Unicode
+#   character with the given directions. For example, you can pass in
+#   'LR' or 'rl' to make a left-right horizontal line, or 'LRD' to make
+#   a 'T' shape. etc. Valid directions are u, d, l, r.
+
+def box_char(s):
+
+    def contains_only(s, dirs):
+        s = lower(s)
+        if len(s) == len(dirs):
+            for c in s:
+                if c not in dirs:
+                    return False
+            return True
+        return False
+    
+    if   contains_only(dirs, 'l'):
+        return '╴'
+    elif contains_only(dirs, 'r'):
+        return '╶'
+    elif contains_only(dirs, 'u'):
+        return '╵'
+    elif contains_only(dirs, 'd'):
+        return '╷'
+    elif contains_only(dirs, 'lr'):
+        return '─'
+    elif contains_only(dirs, 'td'):
+        return '│'
+    elif contains_only(dirs, 'lru'):
+        return '┴'
+    elif contains_only(dirs, 'lrd'):
+        return ''
+    elif contains_only(dirs, 'tdl'):
+        return '┤'
+    elif contains_only(dirs, 'tdr'):
+        return '├'
+    elif contains_only(dirs, 'lu'):
+        return '┘'
+    elif contains_only(dirs, 'ru'):
+        return '└'
+    elif contains_only(dirs, 'ld'):
+        return '┐'
+    elif contains_only(dirs, 'rd'):
+        return '┌'
+    elif contains_only(dirs, 'lurd'):
+        return '┼'
+    else:
+        return ' '
+
+#————————————————————————————————————————————————————————————————————————
 #   FTP MENU class
 #
 
@@ -22,13 +74,15 @@ kMargin_left        = 10
 kMargin_top         = 3
 
 # item duple offsets
-kIndex_id           = 0
-kIndex_name         = 1
-kIndex_flags        = 2
+kIndex_index        = 0
+kIndex_id           = 1
+kIndex_name         = 2
+kIndex_flags        = 3
 
 # Command IDs
 # Connection management
-kMenuID_connect     = 'connect'     # connect to FTP server URL
+kMenuID_connect     = 'connect'     # connect to FTP server by URL
+kMenuID_connect_rand= 'connect_rand'# connect to random FTP server
 kMenuID_disconnect  = 'disconnect'  # disconnect from FTP server
 # Local directory operations
 kMenuID_loc_label   = 'LOCAL'       # just a label
@@ -56,43 +110,56 @@ kMenuFlag_separator = 'separator'
 class FTP_Menu:
 
     import os
-
+    
     #————————————————————————————————————————————————————————————————
     #   POPULATE ITEMS
     
     def populate_items(self, ftp):
-        # The menu is a list. Each menu item comprises an ID, a display name,
-        # and a list of flags.
+        # The menu is a list. Each menu item comprises a 1-based index,
+        # ID, display name, and list of flags.
         
         self.items = []
+        i = 1
         # Special case for disconnected state
         if ftp._ftp == None:
-            self.items.append((kMenuID_connect, 'Connect...', ()))
+            self.items.append((i, kMenuID_connect, 'Connect...', ()))
+            i+=1
+            self.items.append((i, kMenuID_connect_rand, 'Connect to random...', ()))
+            i+=1
         else:
-            self.items.append((kMenuID_disconnect, f'Disconnect from {ftp._url}', ()))
-            self.items.append((kMenuID_separator, '-', (kMenuFlag_separator)))
+            self.items.append((i, kMenuID_disconnect, f'Disconnect from {ftp._url}', ()))
+            i+=1
+            self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
             loc_dir = self.os.path.basename(self.os.path.normpath(ftp._loc_path))
-            self.items.append((kMenuID_loc_label, f'LOCAL: {loc_dir}', (kMenuFlag_disabled)))
-            self.items.append((kMenuID_separator, '-', (kMenuFlag_separator)))
-            self.items.append((kMenuID_loc_list, 'List files', ()))
-            self.items.append((kMenuID_loc_cwd, 'Go to directory...', ()))
-            self.items.append((kMenuID_loc_mkdir, 'New directory...', ()))
-            self.items.append((kMenuID_loc_rm, 'Delete...', ()))
-        
-        if ftp._ftp != None:
-            self.items.append((kMenuID_separator, '-', (kMenuFlag_separator)))
-            rem_dir = self.os.path.basename(self.os.path.normpath(ftp._rem_path))
-            self.items.append((kMenuID_rem_label, f'REMOTE: {rem_dir}', (kMenuFlag_disabled)))
-            self.items.append((kMenuID_separator, '-', (kMenuFlag_separator)))
-            self.items.append((kMenuID_loc_list, 'List files', ()))
-            self.items.append((kMenuID_loc_cwd, 'Go to directory...', ()))
-            self.items.append((kMenuID_loc_mkdir, 'New directory...', ()))
-            self.items.append((kMenuID_loc_rm, 'Delete...', ()))
-        
-        self.items.append((kMenuID_separator, '-', (kMenuFlag_separator)))
+            self.items.append((0, kMenuID_loc_label, f'LOCAL: {loc_dir}', (kMenuFlag_disabled)))
+            self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
+            self.items.append((i, kMenuID_loc_list, 'List files', ()))
+            i+=1
+            self.items.append((i, kMenuID_loc_cwd, 'Go to directory...', ()))
+            i+=1
+            self.items.append((i, kMenuID_loc_mkdir, 'New directory...', ()))
+            i+=1
+            self.items.append((i, kMenuID_loc_rm, 'Delete...', ()))
+            i+=1
 
-        self.items.append((kMenuID_quit, 'Quit', ()))
-        
+        if ftp._ftp != None:
+            self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
+            rem_dir = self.os.path.basename(self.os.path.normpath(ftp._rem_path))
+            self.items.append((0, kMenuID_rem_label, f'REMOTE: {rem_dir}', (kMenuFlag_disabled)))
+            self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
+            self.items.append((i, kMenuID_loc_list, 'List files', ()))
+            i+=1
+            self.items.append((i, kMenuID_loc_cwd, 'Go to directory...', ()))
+            i+=1
+            self.items.append((i, kMenuID_loc_mkdir, 'New directory...', ()))
+            i+=1
+            self.items.append((i, kMenuID_loc_rm, 'Delete...', ()))
+            i+=1
+
+        self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
+
+        self.items.append((i, kMenuID_quit, 'Quit', ()))
+
     #————————————————————————————————————————————————————————————————
     #   DRAW
     
@@ -114,7 +181,7 @@ class FTP_Menu:
         print()
         print()
         
-        for i,item in enumerate(self.items):
+        for item in self.items:
             separator = kMenuFlag_separator in item[kIndex_flags]
             dimmed = separator or kMenuFlag_disabled in item[kIndex_flags]
             if dimmed:
@@ -122,7 +189,8 @@ class FTP_Menu:
             if dimmed:
                 num = '   '
             else:
-                num = f'{i+1:>2}:'
+                i = item[kIndex_index]
+                num = f'{i:>2}:'
             
             if separator:
                 title = '————————————————————————————————————————————————————'
@@ -132,22 +200,32 @@ class FTP_Menu:
 
             if dimmed:
                 print(kANSI_reset, end='')
+            
         print()
-        
+    
     #————————————————————————————————————————————————————————————————
     #   INPUT
     
     def input(self):
         s = input(f'{self._left_marge}Selection > ')
         try:
-            i = int(s) - 1
+            num = int(s)
+            for item in self.items:
+                if item[kIndex_index] == num:
+                    return item[kIndex_id]
         except:
-            i = None
-        if i != None and i in range(len(self.items)):
-            return self.items[i][kIndex_id]
-        else:
             return None
         
+        return None
+
+    #————————————————————————————————————————————————————————————————
+    #   GET FTP URL
+    
+    def get_ftp_url(self):
+        print()
+        url = input(f'{self._left_marge}FTP site address > ')
+        return url
+    
     #————————————————————————————————————————————————————————————————
     #   INITIALIZER
     
@@ -182,11 +260,13 @@ class AgileFTP:
     #   CONNECT
     #
     #   If called with url=None, ask the user for an FTP server URL.
+    #   Return True if connection is successful
     
     def connect(self, url=None):
         
+        success = False
         if url == None:
-            url = random_ftp_server()
+            url = self.random_ftp_server()
         
         try:
             self._ftp = self.FTP(url)
@@ -196,7 +276,7 @@ class AgileFTP:
             self._ftp = None
             self._url = None
 
-        pass
+        return success
         
     #————————————————————————————————————————————————————————————————
     #   DISCONNECT
@@ -258,7 +338,15 @@ if __name__ == '__main__':
             done = True
         
         elif id == kMenuID_connect:
-            ftp.connect(ftp.random_ftp_server())
+            url = menu.get_ftp_url()
+            
+            try:
+                ftp.connect(url)
+            except:
+                print('Error. No luck.')
+        
+        elif id == kMenuID_connect_rand:
+            ftp.connect(None)
         
         elif id == kMenuID_disconnect:
             ftp.disconnect()
