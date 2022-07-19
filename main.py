@@ -352,33 +352,75 @@ if __name__ == '__main__':
             ftp.disconnect()
         
         elif id == kMenuID_loc_list:
+            print()
+            print()
+            print('[dummy output]')
+            print('image1.png     zero bytes  Aug 5, 2019')
+            print('image2.png       27 bytes  Sep 3, 2019')
+            print('textfile.txt    301 KB     May 1, 2018')
+            print('something.jpg   1.3 MB     Jan 3, 2011')
+            print()
+            input('Press Return to continue > ')
             pass
         
         elif id == kMenuID_loc_cwd:
+            print()
+            print()
+            path = input('New path > ')
             pass
         
         elif id == kMenuID_loc_mkdir:
+            print()
+            print()
+            dir_name = input('New directory name > ')
             pass
         
         elif id == kMenuID_loc_rm:
+            print()
+            print()
+            path = input('File to remove > ')
             pass
         
         elif id == kMenuID_rem_list:
+            print()
+            print()
+            print('[dummy output]')
+            print('image1.png     zero bytes  Aug 5, 2019')
+            print('image2.png       27 bytes  Sep 3, 2019')
+            print('textfile.txt    301 KB     May 1, 2018')
+            print('something.jpg   1.3 MB     Jan 3, 2011')
+            print()
+            input('Press Return to continue > ')
             pass
         
         elif id == kMenuID_rem_cwd:
+            print()
+            print()
+            path = input('New path > ')
             pass
         
         elif id == kMenuID_rem_mkdir:
+            print()
+            print()
+            dir_name = input('New directory name > ')
             pass
         
         elif id == kMenuID_rem_rm:
+            print()
+            print()
+            path = input('File to remove > ')
             pass
 
         elif id == kMenuID_upload:
+            print()
+            print()
+            input('To be implemented > ')
             pass
         
         elif id == kMenuID_download:
+            print()
+            print()
+            input('To be implemented > ')
             pass
         
         else:
