@@ -342,11 +342,8 @@ if __name__ == '__main__':
         elif id == kMenuID_rem_list:
             print()
             print()
-            print('[dummy output]')
-            print('image1.png     zero bytes  Aug 5, 2019')
-            print('image2.png       27 bytes  Sep 3, 2019')
-            print('textfile.txt    301 KB     May 1, 2018')
-            print('something.jpg   1.3 MB     Jan 3, 2011')
+            for name in ftp._ftp.nlst():
+                print(name)
             print()
             input('Press Return to continue > ')
             # example: result = ftp.retrlines('LIST')
