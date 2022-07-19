@@ -74,6 +74,7 @@ class FTP_Menu:
             i+=1
             self.items.append((i, kMenuID_connect_rand, 'Connect to random...', ()))
             i+=1
+        # Local options
         else:
             self.items.append((i, kMenuID_disconnect, f'Disconnect from {ftp._url}', ()))
             i+=1
@@ -90,18 +91,19 @@ class FTP_Menu:
             self.items.append((i, kMenuID_loc_rm, 'Delete...', ()))
             i+=1
 
+        # Remote options
         if ftp._ftp != None:
             self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
             rem_dir = self.os.path.basename(self.os.path.normpath(ftp._rem_path))
             self.items.append((0, kMenuID_rem_label, f'REMOTE: {rem_dir}', (kMenuFlag_disabled)))
             self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
-            self.items.append((i, kMenuID_loc_list, 'List files', ()))
+            self.items.append((i, kMenuID_rem_list, 'List files and directories', ()))
             i+=1
-            self.items.append((i, kMenuID_loc_cwd, 'Go to directory...', ()))
+            self.items.append((i, kMenuID_rem_cwd, 'Go to directory...', ()))
             i+=1
-            self.items.append((i, kMenuID_loc_mkdir, 'New directory...', ()))
+            self.items.append((i, kMenuID_rem_mkdir, 'New directory...', ()))
             i+=1
-            self.items.append((i, kMenuID_loc_rm, 'Delete...', ()))
+            self.items.append((i, kMenuID_rem_rm, 'Delete...', ()))
             i+=1
 
         self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
