@@ -120,12 +120,13 @@ class FTP_Menu:
         
         # Some useful ANSI escape codes for awesome terminal text
         kANSI_esc   = '\u001b'
+        kANSI_white_on_blue = kANSI_esc + '[38;5;15m' + kANSI_esc + '[48;5;4m'
         kANSI_gray  = kANSI_esc + '[38;5;243m'
         kANSI_reset = kANSI_esc + '[0m'
         
         print(self._top_marge)
         print(f'{self._left_marge}                  ┌───────────────────────────┐                  ')
-        print(f'{self._left_marge}┌─────────────────┤     A G I L E   F T P     ├─────────────────┐')
+        print(f'{self._left_marge}┌─────────────────┤{kANSI_white_on_blue}     A G I L E   F T P     {kANSI_reset}├─────────────────┐')
         print(f'{self._left_marge}│                 └───────────────────────────┘                 │')
         print(f'{self._left_marge}│                                                               │')
         
@@ -160,7 +161,7 @@ class FTP_Menu:
     #   INPUT
     
     def input(self):
-        s = input(f'{self._left_marge}Selection > ')
+        s = input(f'{self._left_marge}        Selection > ')
         
         # Special case so we can quit with the Q key
         if s.lower() == 'q':
@@ -319,25 +320,22 @@ if __name__ == '__main__':
             print('something.jpg   1.3 MB     Jan 3, 2011')
             print()
             input('Press Return to continue > ')
-            pass
         
         elif id == kMenuID_loc_cwd:
             print()
             print()
             path = input('New path > ')
-            pass
+            # example: result = ftp.cwd('debian')
         
         elif id == kMenuID_loc_mkdir:
             print()
             print()
             dir_name = input('New directory name > ')
-            pass
         
         elif id == kMenuID_loc_rm:
             print()
             print()
             path = input('File to remove > ')
-            pass
         
         elif id == kMenuID_rem_list:
             print()
@@ -349,37 +347,34 @@ if __name__ == '__main__':
             print('something.jpg   1.3 MB     Jan 3, 2011')
             print()
             input('Press Return to continue > ')
-            pass
+            # example: result = ftp.retrlines('LIST')
         
         elif id == kMenuID_rem_cwd:
             print()
             print()
             path = input('New path > ')
-            pass
         
         elif id == kMenuID_rem_mkdir:
             print()
             print()
             dir_name = input('New directory name > ')
-            pass
         
         elif id == kMenuID_rem_rm:
             print()
             print()
             path = input('File to remove > ')
-            pass
 
         elif id == kMenuID_upload:
             print()
             print()
             input('To be implemented > ')
-            pass
         
         elif id == kMenuID_download:
             print()
             print()
             input('To be implemented > ')
-            pass
+            # example: with open('README', 'wb') as fp:
+            #              result = ftp.retrbinary('RETR README', fp.write)
         
         else:
             pass # unknown menu item
