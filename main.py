@@ -247,7 +247,14 @@ class AgileFTP:
             self._ftp.quit()
             self._ftp = None
             self._url = None
-    
+
+    #————————————————————————————————————————————————————————————————
+    #   PRINT REMOTE FILES 
+
+    def display_rem_files(self):
+        for word in self._ftp.nlst():
+            print(word)  
+              
     #————————————————————————————————————————————————————————————————
     #   INIT
     
@@ -342,8 +349,7 @@ if __name__ == '__main__':
         elif id == kMenuID_rem_list:
             print()
             print()
-            for name in ftp._ftp.nlst():
-                print(name)
+            ftp.display_rem_files()
             print()
             input('Press Return to continue > ')
             # example: result = ftp.retrlines('LIST')
