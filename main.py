@@ -1,18 +1,5 @@
   
 #————————————————————————————————————————————————————————————————————————
-#   CLEAR SCREEN
-#
-
-def clear_screen():
-    import os
-    if os.name == 'nt':         # Windows
-        _ = os.system('cls')
-    elif os.name == 'posix':    # macOS and Linux
-        _ = os.system('clear')
-    else:
-        pass                    # unrecognized system: just don't clear
-
-#————————————————————————————————————————————————————————————————————————
 #   FTP MENU class
 #
 
@@ -59,6 +46,18 @@ class FTP_Menu:
 
     import os
     
+    #————————————————————————————————————————————————————————————————
+    #   CLEAR SCREEN
+
+    def clear_screen(self):
+        import os
+        if os.name == 'nt':         # Windows
+            _ = os.system('cls')
+        elif os.name == 'posix':    # macOS and Linux
+            _ = os.system('clear')
+        else:
+            pass                    # unrecognized system: just don't clear
+
     #————————————————————————————————————————————————————————————————
     #   POPULATE ITEMS
     
@@ -118,12 +117,12 @@ class FTP_Menu:
         # Populate the menu items
         self.populate_items(ftp)
 
-        clear_screen()
+        self.clear_screen()
         
         # Some useful ANSI escape codes for awesome terminal text
         kANSI_esc   = '\u001b'
         kANSI_white_on_blue = kANSI_esc + '[38;5;15m' + kANSI_esc + '[48;5;4m'
-        kANSI_gray  = kANSI_esc + '[38;5;243m'
+        kANSI_gray  = kANSI_esc + '[38;5;244m'
         kANSI_reset = kANSI_esc + '[0m'
         
         print(self._top_marge)
@@ -133,15 +132,15 @@ class FTP_Menu:
         print(f'{self._left_marge}│                                                               │')
         
         for item in self.items:
-            separator = kMenuFlag_separator in item[kIndex_flags]
-            dimmed = separator or kMenuFlag_disabled in item[kIndex_flags]
+            is_separator = kMenuFlag_separator in item[kIndex_flags]
+            dimmed = is_separator or kMenuFlag_disabled in item[kIndex_flags]
             if dimmed:
                 num = '     '
             else:
                 i = item[kIndex_index]
                 num = f'{i:>4}: '
             
-            if separator:
+            if is_separator:
                 title = '─' * 48 + '      '
             else:
                 title = item[kIndex_name]
@@ -178,6 +177,20 @@ class FTP_Menu:
             return None
         
         return None
+
+    #————————————————————————————————————————————————————————————————
+    #   SHOW ERROR
+    
+    def show_error(self, string):
+        self.clear_screen()
+        print(self._top_marge)
+        print(self._left_marge + '┌─' + '─' * 70 + '─┐')
+        print(self._left_marge + '│ ' + ' ' * 70 + ' │')
+        print(self._left_marge + '│ ' + string + ' ' * (70 - len(string)) + ' │')
+        print(self._left_marge + '│ ' + ' ' * 70 + ' │')
+        print(self._left_marge + '└─' + '─' * 70 + '─┘')
+        print()
+        input(self._left_marge + 'Press Return to continue > ')
 
     #————————————————————————————————————————————————————————————————
     #   GET FTP URL
@@ -248,6 +261,16 @@ class AgileFTP:
             self._ftp = None
             self._url = None
 
+    #————————————————————————————————————————————————————————————————
+    #   SET PATH
+
+    def set_path(self, path, remote=True):
+        if remote:
+            self._ftp.cwd(path)
+            self._rem_path = path
+        else:
+            pass # WRITEME
+    
     #————————————————————————————————————————————————————————————————
     #   PRINT REMOTE FILES 
 
@@ -333,14 +356,19 @@ if __name__ == '__main__':
         elif id == kMenuID_loc_cwd:
             print()
             print()
-            path = input('New path > ')
-            # example: result = ftp.cwd('debian')
-        
+            path = input('New path (or “..”) > ')
+            try:
+                result = ftp.cwd(path)
+                ftp.set_path(path, remote = False)
+            except:
+                menu.show_error(f'Cannot move to {path}.')
+
         elif id == kMenuID_loc_mkdir:
             print()
             print()
             dir_name = input('New directory name > ')
-        
+            menu.show_error(f'Ain’t wrote yet..')
+
         elif id == kMenuID_loc_rm:
             print()
             print()
@@ -357,8 +385,12 @@ if __name__ == '__main__':
         elif id == kMenuID_rem_cwd:
             print()
             print()
-            path = input('New path > ')
-        
+            path = input('New path (or “..”) > ')
+            try:
+                ftp.set_path(path, remote = True)
+            except:
+                menu.show_error(f'Cannot move to {path}.')
+
         elif id == kMenuID_rem_mkdir:
             print()
             print()
@@ -384,4 +416,4 @@ if __name__ == '__main__':
         else:
             pass # unknown menu item
 
-    clear_screen()
+    menu.clear_screen()
