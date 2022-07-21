@@ -1,4 +1,5 @@
-  
+import os
+
 #————————————————————————————————————————————————————————————————————————
 #   FTP MENU class
 #
@@ -44,8 +45,6 @@ kMenuFlag_separator = 'separator'
 
 class FTP_Menu:
 
-    import os
-    
     #————————————————————————————————————————————————————————————————
     #   CLEAR SCREEN
 
@@ -62,6 +61,8 @@ class FTP_Menu:
     #   POPULATE ITEMS
     
     def populate_items(self, ftp):
+        import os
+        
         # The menu is a list. Each menu item comprises a 1-based index,
         # ID, display name, and list of flags.
         
@@ -78,7 +79,7 @@ class FTP_Menu:
             self.items.append((i, kMenuID_disconnect, f'Disconnect from {ftp._url}', ()))
             i+=1
             self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
-            loc_dir = self.os.path.basename(self.os.path.normpath(ftp._loc_path))
+            loc_dir = os.path.basename(os.path.normpath(os.getcwd()))
             self.items.append((0, kMenuID_loc_label, f'LOCAL: {loc_dir}', (kMenuFlag_disabled)))
             self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
             self.items.append((i, kMenuID_loc_list, 'List files...', ()))
@@ -93,7 +94,7 @@ class FTP_Menu:
         # Remote options
         if ftp._ftp != None:
             self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
-            rem_dir = self.os.path.basename(self.os.path.normpath(ftp._rem_path))
+            rem_dir = os.path.basename(os.path.normpath(ftp._ftp.pwd()))
             self.items.append((0, kMenuID_rem_label, f'REMOTE: {rem_dir}', (kMenuFlag_disabled)))
             self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
             self.items.append((i, kMenuID_rem_list, 'List files and directories', ()))
@@ -268,7 +269,7 @@ class AgileFTP:
     
     def is_dir(self, path):
         data = []
-        ftp.dir(path, data.append)
+        self._ftp.dir(path, data.append)
         for i,d in enumerate(data):
             print(f'{i}: {d}')
         return True
@@ -277,20 +278,20 @@ class AgileFTP:
     #   SET PATH
 
     def set_path(self, path, remote=True):
+        import os
         if remote:
             self._ftp.cwd(path)
-            self._rem_path = path
         else:
-            pass # WRITEME
+            os.chdir(path)
     
     #————————————————————————————————————————————————————————————————
     #   DELETE
-
+    
     def delete(self, path, remote=True):
         if remote:
             # Is this a file or a directory?
             breakpoint()
-            is self.is_dir(path):
+            if self.is_dir(path):
                 result = self._ftp.rmdir(path)
             else:
                 result = self._ftp.delete(path)
@@ -316,8 +317,6 @@ class AgileFTP:
         '''
         self._url = None
         self._ftp = None
-        self._loc_path = ''
-        self._rem_path = ''
 
         # Some freely accessible FTP sites, from https://www.mmnt.net
         self._public_ftp_urls = ['ftp.us.debian.org',
@@ -388,7 +387,7 @@ if __name__ == '__main__':
                 ftp.set_path(path, remote = False)
             except:
                 menu.show_error(f'Cannot move to {path}.')
-
+        
         elif id == kMenuID_loc_mkdir:
             print()
             print()
