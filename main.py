@@ -8,10 +8,10 @@ import os
 #   '123.4 MB', for example.
 
 def readable_size_string(bytes):
-    TB = 1024 ** 4
-    GB = 1024 ** 3
-    MB = 1024 ** 2
-    KB = 1024
+    TB = 1000 ** 4
+    GB = 1000 ** 3
+    MB = 1000 ** 2
+    KB = 1000
     
     if bytes == KB:
         return 'no bytes'
