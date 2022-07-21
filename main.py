@@ -88,6 +88,12 @@ def main():
         elif id == kMenuID_upload:
             print()
             print()
+            path = input(menu.left_margin() + 'File to upload > ')
+            try:
+                result = ftp.upload_file(path, remote = is_remote)
+            except:
+                menu.show_error(f'Cannot delete {path}.')
+
             input(menu.left_margin() + 'To be implemented > ')
         
         elif id == kMenuID_download:
@@ -241,6 +247,15 @@ class FTP_Menu:
             i+=1
             self.items.append((i, kMenuID_rem_rm, 'Delete...', ()))
             i+=1
+        
+        # File transfer operations
+        if ftp._ftp != None:
+            self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
+            self.items.append((0, kMenuID_rem_label, f'TRANSFER:{loc_dir} BETWEEN {rem_dir} ', (kMenuFlag_disabled)))
+            self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
+            self.items.append((i, kMenuID_rem_list, 'upload file(s)', ()))
+            i+=1
+
         
         self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
 
@@ -498,6 +513,12 @@ class AgileFTP:
             result.append(f + ' ' * (max_len + 1 - len(f)) + '{: >8}'.format(size_str))
         
         return result
+    
+    #————————————————————————————————————————————————————————————————
+    #   PUT FILE ONTO REMOTE SERVERE
+
+    def upload_file(self, path):
+        return
         
     #————————————————————————————————————————————————————————————————
     #   INIT
