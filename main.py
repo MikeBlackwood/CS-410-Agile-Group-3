@@ -69,9 +69,9 @@ class FTP_Menu:
         i = 1
         # Special case for disconnected state
         if ftp._ftp == None:
-            self.items.append((i, kMenuID_connect, 'Connect...', ()))
+            self.items.append((i, kMenuID_connect, 'Connect to...', ()))
             i+=1
-            self.items.append((i, kMenuID_connect_rand, 'Connect to random...', ()))
+            self.items.append((i, kMenuID_connect_rand, 'Connect to random', ()))
             i+=1
         # Local options
         else:
@@ -81,7 +81,7 @@ class FTP_Menu:
             loc_dir = self.os.path.basename(self.os.path.normpath(ftp._loc_path))
             self.items.append((0, kMenuID_loc_label, f'LOCAL: {loc_dir}', (kMenuFlag_disabled)))
             self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
-            self.items.append((i, kMenuID_loc_list, 'List files', ()))
+            self.items.append((i, kMenuID_loc_list, 'List files...', ()))
             i+=1
             self.items.append((i, kMenuID_loc_cwd, 'Go to directory...', ()))
             i+=1
@@ -121,6 +121,7 @@ class FTP_Menu:
         
         # Some useful ANSI escape codes for awesome terminal text
         kANSI_esc   = '\u001b'
+        kANSI_bold  = kANSI_esc + '[1m'
         kANSI_white_on_blue = kANSI_esc + '[38;5;15m' + kANSI_esc + '[48;5;4m'
         kANSI_gray  = kANSI_esc + '[38;5;244m'
         kANSI_reset = kANSI_esc + '[0m'
@@ -246,6 +247,7 @@ class AgileFTP:
             self._ftp = self.FTP(url)
             self._ftp.login()
             self._url = url
+            success = True
         except:
             self._ftp = None
             self._url = None
@@ -262,6 +264,16 @@ class AgileFTP:
             self._url = None
 
     #————————————————————————————————————————————————————————————————
+    #   IS DIR?
+    
+    def is_dir(self, path):
+        data = []
+        ftp.dir(path, data.append)
+        for i,d in enumerate(data):
+            print(f'{i}: {d}')
+        return True
+
+    #————————————————————————————————————————————————————————————————
     #   SET PATH
 
     def set_path(self, path, remote=True):
@@ -271,6 +283,21 @@ class AgileFTP:
         else:
             pass # WRITEME
     
+    #————————————————————————————————————————————————————————————————
+    #   DELETE
+
+    def delete(self, path, remote=True):
+        if remote:
+            # Is this a file or a directory?
+            breakpoint()
+            is self.is_dir(path):
+                result = self._ftp.rmdir(path)
+            else:
+                result = self._ftp.delete(path)
+        else:
+            result = False # WRITEME
+        return result
+        
     #————————————————————————————————————————————————————————————————
     #   PRINT REMOTE FILES 
 
@@ -358,7 +385,6 @@ if __name__ == '__main__':
             print()
             path = input('New path (or “..”) > ')
             try:
-                result = ftp.cwd(path)
                 ftp.set_path(path, remote = False)
             except:
                 menu.show_error(f'Cannot move to {path}.')
@@ -373,14 +399,17 @@ if __name__ == '__main__':
             print()
             print()
             path = input('File to remove > ')
-        
+            try:
+                result = ftp.delete(path, remote = False)
+            except:
+                menu.show_error(f'Cannot delete {path}.')
+
         elif id == kMenuID_rem_list:
             print()
             print()
             ftp.display_rem_files()
             print()
             input('Press Return to continue > ')
-            # example: result = ftp.retrlines('LIST')
         
         elif id == kMenuID_rem_cwd:
             print()
@@ -400,7 +429,11 @@ if __name__ == '__main__':
             print()
             print()
             path = input('File to remove > ')
-
+            try:
+                result = ftp.delete(path, remote = True)
+            except:
+                menu.show_error(f'Cannot delete {path}.')
+            
         elif id == kMenuID_upload:
             print()
             print()
