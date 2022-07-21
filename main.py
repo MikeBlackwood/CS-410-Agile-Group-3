@@ -1,6 +1,32 @@
 import os
 
 #————————————————————————————————————————————————————————————————————————
+#   READABLE SIZE STRING
+#
+#   Gratuitous, yet sweet. Given a size in bytes, returns a nicely
+#   formatted string to show the size to a human. Changes 123445232 to
+#   '123.4 MB', for example.
+
+def readable_size_string(bytes):
+    TB = 1024 ** 4
+    GB = 1024 ** 3
+    MB = 1024 ** 2
+    KB = 1024
+    
+    if bytes == KB:
+        return 'no bytes'
+    elif bytes < KB:
+        return f'{bytes}  B'
+    elif bytes < MB:
+        return '{:.1f}'.format(bytes / KB) + ' KB'
+    elif bytes < GB:
+        return '{:.1f}'.format(bytes / MB) + ' MB'
+    elif bytes < TB:
+        return '{:.1f}'.format(bytes / GB) + ' GB'
+    else:
+        return '{:.1f}'.format(bytes / TB) + ' TB'
+
+#————————————————————————————————————————————————————————————————————————
 #   FTP MENU class
 #
 
@@ -372,13 +398,14 @@ if __name__ == '__main__':
         elif id == kMenuID_loc_list:
             print()
             print()
-            print('[dummy output]')
-            print('image1.png     zero bytes  Aug 5, 2019')
-            print('image2.png       27 bytes  Sep 3, 2019')
-            print('textfile.txt    301 KB     May 1, 2018')
-            print('something.jpg   1.3 MB     Jan 3, 2011')
+            flist = sorted(os.listdir())
+            max_len = len(max(flist, key = len))
+            for f in flist:
+                stats = os.stat(f)
+                size_str = readable_size_string(stats.st_size)
+                print('          ', f, ' ' * (max_len + 1 - len(f)), '{: >8}'.format(size_str))
             print()
-            input('Press Return to continue > ')
+            input('          Press Return to continue > ')
         
         elif id == kMenuID_loc_cwd:
             print()
@@ -409,7 +436,7 @@ if __name__ == '__main__':
             print()
             ftp.display_rem_files()
             print()
-            input('Press Return to continue > ')
+            input('          Press Return to continue > ')
         
         elif id == kMenuID_rem_cwd:
             print()
