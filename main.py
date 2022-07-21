@@ -74,22 +74,23 @@ class FTP_Menu:
             i+=1
             self.items.append((i, kMenuID_connect_rand, 'Connect to random', ()))
             i+=1
-        # Local options
         else:
             self.items.append((i, kMenuID_disconnect, f'Disconnect from {ftp._url}', ()))
             i+=1
-            self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
-            loc_dir = os.path.basename(os.path.normpath(os.getcwd()))
-            self.items.append((0, kMenuID_loc_label, f'LOCAL: {loc_dir}', (kMenuFlag_disabled)))
-            self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
-            self.items.append((i, kMenuID_loc_list, 'List files...', ()))
-            i+=1
-            self.items.append((i, kMenuID_loc_cwd, 'Go to directory...', ()))
-            i+=1
-            self.items.append((i, kMenuID_loc_mkdir, 'New directory...', ()))
-            i+=1
-            self.items.append((i, kMenuID_loc_rm, 'Delete...', ()))
-            i+=1
+        
+        # Local options
+        self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
+        loc_dir = os.path.basename(os.path.normpath(os.getcwd()))
+        self.items.append((0, kMenuID_loc_label, f'LOCAL: {loc_dir}', (kMenuFlag_disabled)))
+        self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
+        self.items.append((i, kMenuID_loc_list, 'List files...', ()))
+        i+=1
+        self.items.append((i, kMenuID_loc_cwd, 'Go to directory...', ()))
+        i+=1
+        self.items.append((i, kMenuID_loc_mkdir, 'New directory...', ()))
+        i+=1
+        self.items.append((i, kMenuID_loc_rm, 'Delete...', ()))
+        i+=1
 
         # Remote options
         if ftp._ftp != None:
@@ -105,7 +106,7 @@ class FTP_Menu:
             i+=1
             self.items.append((i, kMenuID_rem_rm, 'Delete...', ()))
             i+=1
-
+        
         self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
 
         self.items.append((i, kMenuID_quit, 'Quit', ()))
