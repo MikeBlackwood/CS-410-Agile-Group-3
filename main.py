@@ -1,6 +1,108 @@
 import os
 
 #————————————————————————————————————————————————————————————————————————
+#   MAIN
+
+def main():
+    # set up our ftp client class
+    ftp = AgileFTP()
+    
+    # get a menu and run it once
+
+    menu = FTP_Menu()
+    done = False
+    
+    while not done:
+        menu.draw(ftp)
+        id = menu.input()
+        if id == kMenuID_quit:
+            ftp.disconnect()
+            done = True
+        
+        elif id == kMenuID_connect:
+            url = menu.get_ftp_url()
+            
+            try:
+                ftp.connect(url)
+            except:
+                print('Error. No luck.')
+        
+        elif id == kMenuID_connect_rand:
+            ftp.connect(None)
+        
+        elif id == kMenuID_disconnect:
+            ftp.disconnect()
+        
+        elif id == kMenuID_loc_cwd or id == kMenuID_rem_cwd:
+            is_remote = (id == kMenuID_rem_cwd)
+            print()
+            print()
+            path = input(menu.left_margin() + 'New path (or “..”) > ')
+            try:
+                ftp.set_path(path, remote=is_remote)
+            except:
+                menu.show_error(f'Cannot move to {path}.')
+        
+        elif id == kMenuID_loc_ren or id == kMenuID_rem_ren:
+            is_remote = (id == kMenuID_rem_ren)
+            print()
+            print()
+            curr_name = input(menu.left_margin() + 'File to rename > ')
+            new_name = input(menu.left_margin() + 'New name > ')
+            try:
+                ftp.rename(path, new_name, remote=is_remote)
+            except:
+                menu.show_error(f'Cannot rename “{curr_name}” to “{new_name}.”')
+                
+        elif id == kMenuID_loc_mkdir or id == kMenuID_rem_mkdir:
+            is_remote = (id == kMenuID_rem_mkdir)
+            print()
+            print()
+            dir_name = input(menu.left_margin() + 'New directory name > ')
+            #try:
+            #    ftp.mkdir(dir_name, remote=is_remote)
+            #except:
+            #    menu.show_error(f'Cannot make directory “{dir_name}”.')
+
+        elif id == kMenuID_loc_rm or id == kMenuID_rem_rm:
+            is_remote = (id == kMenuID_rem_rm)
+            print()
+            print()
+            path = input(menu.left_margin() + 'File to remove > ')
+            try:
+                result = ftp.delete(path, remote = is_remote)
+            except:
+                menu.show_error(f'Cannot delete {path}.')
+
+        elif id == kMenuID_loc_list or id == kMenuID_rem_list:
+            is_remote = (id == kMenuID_rem_list)
+
+            lines = ftp.get_file_list(remote=is_remote)
+            print()
+            print()
+            for l in lines:
+                print(menu.left_margin() + l)
+            print()
+            input(menu.left_margin() + 'Press Return to continue > ')
+        
+        elif id == kMenuID_upload:
+            print()
+            print()
+            input(menu.left_margin() + 'To be implemented > ')
+        
+        elif id == kMenuID_download:
+            print()
+            print()
+            input(menu.left_margin() + 'To be implemented > ')
+            # example: with open('README', 'wb') as fp:
+            #              result = ftp.retrbinary('RETR README', fp.write)
+        
+        else:
+            pass # unknown menu item
+
+    menu.clear_screen()
+
+#————————————————————————————————————————————————————————————————————————
 #   READABLE SIZE STRING
 #
 #   Gratuitous, yet sweet. Given a size in bytes, returns a nicely
@@ -50,12 +152,15 @@ kMenuID_disconnect  = 'disconnect'  # disconnect from FTP server
 kMenuID_loc_label   = 'LOCAL'       # just a label
 kMenuID_loc_list    = 'loc_list'    # list files in local working directory
 kMenuID_loc_cwd     = 'loc_cwd'     # change local working directory
+kMenuID_loc_ren     = 'loc_ren'     # rename local file or directory
 kMenuID_loc_mkdir   = 'loc_mkdir'   # create local directory
 kMenuID_loc_rm      = 'loc_rm'      # delete local file or directory
+
 # Remote directory operations
 kMenuID_rem_label   = 'REMOTE'      # just a label
 kMenuID_rem_list    = 'rem_list'    # list files in remote working directory
 kMenuID_rem_cwd     = 'rem_cwd'     # change remote working directory
+kMenuID_rem_ren     = 'rem_ren'     # rename remote file or directory
 kMenuID_rem_mkdir   = 'rem_mkdir'   # create remote directory
 kMenuID_rem_rm      = 'rem_rm'      # delete remote file or directory
 # File transfer operations
@@ -113,6 +218,8 @@ class FTP_Menu:
         i+=1
         self.items.append((i, kMenuID_loc_cwd, 'Go to directory...', ()))
         i+=1
+        self.items.append((i, kMenuID_loc_ren, 'Rename...', ()))
+        i+=1
         self.items.append((i, kMenuID_loc_mkdir, 'New directory...', ()))
         i+=1
         self.items.append((i, kMenuID_loc_rm, 'Delete...', ()))
@@ -127,6 +234,8 @@ class FTP_Menu:
             self.items.append((i, kMenuID_rem_list, 'List files and directories', ()))
             i+=1
             self.items.append((i, kMenuID_rem_cwd, 'Go to directory...', ()))
+            i+=1
+            self.items.append((i, kMenuID_rem_ren, 'Rename...', ()))
             i+=1
             self.items.append((i, kMenuID_rem_mkdir, 'New directory...', ()))
             i+=1
@@ -301,11 +410,11 @@ class AgileFTP:
     #   IS DIR?
     
     def is_dir(self, path):
-        data = []
-        self._ftp.dir(path, data.append)
-        for i,d in enumerate(data):
-            print(f'{i}: {d}')
-        return True
+        try:
+            self._ftp.size(path)
+        except:
+            return True  # If we couldn't get a size, it's a directory
+        return False
 
     #————————————————————————————————————————————————————————————————
     #   SET PATH
@@ -333,12 +442,38 @@ class AgileFTP:
         return result
         
     #————————————————————————————————————————————————————————————————
-    #   PRINT REMOTE FILES 
-
-    def display_rem_files(self):
-        for word in self._ftp.nlst():
-            print(word)  
-              
+    #   GET FILE LIST
+    #
+    #   Return a list of strings, each of which describes one file,
+    #   for display.
+    
+    def get_file_list(self, remote=True):
+        if remote:
+            names = self._ftp.nlst()
+            sizes = []
+            for f in names:
+                try:
+                    sizes.append(self._ftp.size(f))
+                except:
+                    sizes.append(None) # Directories have no size
+        else:
+            names = os.listdir()
+            sizes = [os.stat(f).st_size for f in names]
+        
+        result = []
+        names = sorted(names)
+        longest_name = max(names, key=len)
+        max_len = len(longest_name)
+        
+        for i,f in enumerate(names):
+            if sizes[i] == None:
+                size_str = ''
+            else:
+                size_str = readable_size_string(sizes[i])
+            result.append(f + ' ' * (max_len + 1 - len(f)) + '{: >8}'.format(size_str))
+        
+        return result
+        
     #————————————————————————————————————————————————————————————————
     #   INIT
     
@@ -372,114 +507,4 @@ class AgileFTP:
                                  ]
 
 if __name__ == '__main__':
-    # set up our ftp client class
-    ftp = AgileFTP()
-    
-    # get a menu and run it once
-
-    menu = FTP_Menu()
-    done = False
-    
-    while not done:
-        menu.draw(ftp)
-        id = menu.input()
-        if id == kMenuID_quit:
-            ftp.disconnect()
-            done = True
-        
-        elif id == kMenuID_connect:
-            url = menu.get_ftp_url()
-            
-            try:
-                ftp.connect(url)
-            except:
-                print('Error. No luck.')
-        
-        elif id == kMenuID_connect_rand:
-            ftp.connect(None)
-        
-        elif id == kMenuID_disconnect:
-            ftp.disconnect()
-        
-        elif id == kMenuID_loc_list:
-            print()
-            print()
-            flist = sorted(os.listdir())
-            max_len = len(max(flist, key = len))
-            for f in flist:
-                stats = os.stat(f)
-                size_str = readable_size_string(stats.st_size)
-                print(menu.left_margin() + f, ' ' * (max_len + 1 - len(f)), '{: >8}'.format(size_str))
-            print()
-            input(menu.left_margin() + 'Press Return to continue > ')
-        
-        elif id == kMenuID_loc_cwd:
-            print()
-            print()
-            path = input(menu.left_margin() + 'New path (or “..”) > ')
-            try:
-                ftp.set_path(path, remote = False)
-            except:
-                menu.show_error(f'Cannot move to {path}.')
-        
-        elif id == kMenuID_loc_mkdir:
-            print()
-            print()
-            dir_name = input(menu.left_margin() + 'New directory name > ')
-            menu.show_error(f'Ain’t wrote yet..')
-
-        elif id == kMenuID_loc_rm:
-            print()
-            print()
-            path = input(menu.left_margin() + 'File to remove > ')
-            try:
-                result = ftp.delete(path, remote = False)
-            except:
-                menu.show_error(f'Cannot delete {path}.')
-
-        elif id == kMenuID_rem_list:
-            print()
-            print()
-            ftp.display_rem_files()
-            print()
-            input(menu.left_margin() + 'Press Return to continue > ')
-        
-        elif id == kMenuID_rem_cwd:
-            print()
-            print()
-            path = input(menu.left_margin() + 'New path (or “..”) > ')
-            try:
-                ftp.set_path(path, remote = True)
-            except:
-                menu.show_error(f'Cannot move to {path}.')
-
-        elif id == kMenuID_rem_mkdir:
-            print()
-            print()
-            dir_name = input(menu.left_margin() + 'New directory name > ')
-        
-        elif id == kMenuID_rem_rm:
-            print()
-            print()
-            path = input(menu.left_margin() + 'File to remove > ')
-            try:
-                result = ftp.delete(path, remote = True)
-            except:
-                menu.show_error(f'Cannot delete {path}.')
-            
-        elif id == kMenuID_upload:
-            print()
-            print()
-            input(menu.left_margin() + 'To be implemented > ')
-        
-        elif id == kMenuID_download:
-            print()
-            print()
-            input(menu.left_margin() + 'To be implemented > ')
-            # example: with open('README', 'wb') as fp:
-            #              result = ftp.retrbinary('RETR README', fp.write)
-        
-        else:
-            pass # unknown menu item
-
-    menu.clear_screen()
+    main()
