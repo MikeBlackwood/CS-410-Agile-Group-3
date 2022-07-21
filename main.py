@@ -70,7 +70,7 @@ def main():
             print()
             path = input(menu.left_margin() + 'File to remove > ')
             try:
-                result = ftp.delete(path, remote = is_remote)
+                result = ftp.delete(path, remote=is_remote)
             except:
                 menu.show_error(f'Cannot delete {path}.')
 
@@ -409,11 +409,27 @@ class AgileFTP:
     #————————————————————————————————————————————————————————————————
     #   IS DIR?
     
-    def is_dir(self, path):
-        try:
-            self._ftp.size(path)
-        except:
-            return True  # If we couldn't get a size, it's a directory
+    def is_dir(self, path, remote):
+    
+        if remote:
+            #
+            # DEBUG: It's possible that some FTP servers will return a size
+            # for folders. I don't think the correct behavior is specified.
+            # If that's the case, we'll need some other method to determine
+            # whether something is a folder. For example, we might try to
+            # read the contents of the directory—if it works, it's a folder.
+            # (But the converse is not necessarily true: if it doesn't work,
+            # it may be a permissions violation or some other issue. That said,
+            # if you can't read the contents of a folder, you probably
+            # shouldn't be able to delete it! So that might be okay.
+            #
+            try:
+                self._ftp.size(path)
+            except:
+                return True  # If we couldn't get a size, it's a directory
+        else:
+            return os.path.isdir(path)
+        
         return False
 
     #————————————————————————————————————————————————————————————————
@@ -429,11 +445,11 @@ class AgileFTP:
     #————————————————————————————————————————————————————————————————
     #   RENAME
     
-    def rename(self, old_name, new_name, remote=is_remote):
+    def rename(self, old_name, new_name, remote=True):
         if remote:
-            pass #WRITEME
+            self._ftp.rename(old_name, new_name)
         else:
-            pass #WRITEME
+            os.rename(old_name, new_name)
             
     #————————————————————————————————————————————————————————————————
     #   DELETE
@@ -441,13 +457,12 @@ class AgileFTP:
     def delete(self, path, remote=True):
         if remote:
             # Is this a file or a directory?
-            breakpoint()
-            if self.is_dir(path):
+            if self.is_dir(path, remote):
                 result = self._ftp.rmdir(path)
             else:
                 result = self._ftp.delete(path)
         else:
-            result = False # WRITEME
+            result = os.delete(path)
             
         return result
         
