@@ -427,6 +427,15 @@ class AgileFTP:
             os.chdir(path)
     
     #————————————————————————————————————————————————————————————————
+    #   RENAME
+    
+    def rename(self, old_name, new_name, remote=is_remote):
+        if remote:
+            pass #WRITEME
+        else:
+            pass #WRITEME
+            
+    #————————————————————————————————————————————————————————————————
     #   DELETE
     
     def delete(self, path, remote=True):
@@ -439,6 +448,7 @@ class AgileFTP:
                 result = self._ftp.delete(path)
         else:
             result = False # WRITEME
+            
         return result
         
     #————————————————————————————————————————————————————————————————
