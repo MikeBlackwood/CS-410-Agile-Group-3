@@ -155,10 +155,10 @@ class FTP_Menu:
         kANSI_reset = kANSI_esc + '[0m'
         
         print(self._top_marge)
-        print(f'{self._left_marge}                  ┌───────────────────────────┐                  ')
-        print(f'{self._left_marge}┌─────────────────┤{kANSI_white_on_blue}     A G I L E   F T P     {kANSI_reset}├─────────────────┐')
-        print(f'{self._left_marge}│                 └───────────────────────────┘                 │')
-        print(f'{self._left_marge}│                                                               │')
+        print(self._left_marge +  '                  ┌───────────────────────────┐                  ')
+        print(self._left_marge + f'┌─────────────────┤{kANSI_white_on_blue}     A G I L E   F T P     {kANSI_reset}├─────────────────┐')
+        print(self._left_marge +  '│                 └───────────────────────────┘                 │')
+        print(self._left_marge +  '│                                                               │')
         
         for item in self.items:
             is_separator = kMenuFlag_separator in item[kIndex_flags]
@@ -175,7 +175,7 @@ class FTP_Menu:
                 title = item[kIndex_name]
             s = f'{num}{title}'
             n = 59 - len(s)
-            print(f'{self._left_marge}│    ', end='')
+            print(self._left_marge + '│    ', end='')
             if dimmed:
                 print(kANSI_gray, end='')
             print(f'{s}{" "*n}', end='')
@@ -183,15 +183,15 @@ class FTP_Menu:
                 print(kANSI_reset, end='')
             print('│')
             
-        print(f'{self._left_marge}│                                                               │')
-        print(f'{self._left_marge}│                                                               │')
-        print(f'{self._left_marge}└───────────────────────────────────────────────────────────────┘')
+        print(self._left_marge + '│                                                               │')
+        print(self._left_marge + '│                                                               │')
+        print(self._left_marge + '└───────────────────────────────────────────────────────────────┘')
 
     #————————————————————————————————————————————————————————————————
     #   INPUT
     
     def input(self):
-        s = input(f'{self._left_marge}        Selection > ')
+        s = input(self._left_marge + '           Selection > ')
         
         # Special case so we can quit with the Q key
         if s.lower() == 'q':
@@ -226,8 +226,14 @@ class FTP_Menu:
     
     def get_ftp_url(self):
         print()
-        url = input(f'{self._left_marge}FTP site address > ')
+        url = input(self._left_marge + 'FTP site address > ')
         return url
+    
+    #————————————————————————————————————————————————————————————————
+    # LEFT MARGIN
+    
+    def left_margin(self):
+        return self._left_marge
     
     #————————————————————————————————————————————————————————————————
     #   INITIALIZER
@@ -403,14 +409,14 @@ if __name__ == '__main__':
             for f in flist:
                 stats = os.stat(f)
                 size_str = readable_size_string(stats.st_size)
-                print('          ', f, ' ' * (max_len + 1 - len(f)), '{: >8}'.format(size_str))
+                print(menu.left_margin() + f, ' ' * (max_len + 1 - len(f)), '{: >8}'.format(size_str))
             print()
-            input('          Press Return to continue > ')
+            input(menu.left_margin() + 'Press Return to continue > ')
         
         elif id == kMenuID_loc_cwd:
             print()
             print()
-            path = input('New path (or “..”) > ')
+            path = input(menu.left_margin() + 'New path (or “..”) > ')
             try:
                 ftp.set_path(path, remote = False)
             except:
@@ -419,13 +425,13 @@ if __name__ == '__main__':
         elif id == kMenuID_loc_mkdir:
             print()
             print()
-            dir_name = input('New directory name > ')
+            dir_name = input(menu.left_margin() + 'New directory name > ')
             menu.show_error(f'Ain’t wrote yet..')
 
         elif id == kMenuID_loc_rm:
             print()
             print()
-            path = input('File to remove > ')
+            path = input(menu.left_margin() + 'File to remove > ')
             try:
                 result = ftp.delete(path, remote = False)
             except:
@@ -436,12 +442,12 @@ if __name__ == '__main__':
             print()
             ftp.display_rem_files()
             print()
-            input('          Press Return to continue > ')
+            input(menu.left_margin() + 'Press Return to continue > ')
         
         elif id == kMenuID_rem_cwd:
             print()
             print()
-            path = input('New path (or “..”) > ')
+            path = input(menu.left_margin() + 'New path (or “..”) > ')
             try:
                 ftp.set_path(path, remote = True)
             except:
@@ -450,12 +456,12 @@ if __name__ == '__main__':
         elif id == kMenuID_rem_mkdir:
             print()
             print()
-            dir_name = input('New directory name > ')
+            dir_name = input(menu.left_margin() + 'New directory name > ')
         
         elif id == kMenuID_rem_rm:
             print()
             print()
-            path = input('File to remove > ')
+            path = input(menu.left_margin() + 'File to remove > ')
             try:
                 result = ftp.delete(path, remote = True)
             except:
@@ -464,12 +470,12 @@ if __name__ == '__main__':
         elif id == kMenuID_upload:
             print()
             print()
-            input('To be implemented > ')
+            input(menu.left_margin() + 'To be implemented > ')
         
         elif id == kMenuID_download:
             print()
             print()
-            input('To be implemented > ')
+            input(menu.left_margin() + 'To be implemented > ')
             # example: with open('README', 'wb') as fp:
             #              result = ftp.retrbinary('RETR README', fp.write)
         
