@@ -59,10 +59,10 @@ def main():
             print()
             print()
             dir_name = input(menu.left_margin() + 'New directory name > ')
-            #try:
-            #    ftp.mkdir(dir_name, remote=is_remote)
-            #except:
-            #    menu.show_error(f'Cannot make directory “{dir_name}”.')
+            try:
+               ftp.mkdir(dir_name, remote=is_remote)
+            except:
+               menu.show_error(f'Cannot make directory “{dir_name}”.')
 
         elif id == kMenuID_loc_rm or id == kMenuID_rem_rm:
             is_remote = (id == kMenuID_rem_rm)
@@ -515,11 +515,19 @@ class AgileFTP:
         return result
     
     #————————————————————————————————————————————————————————————————
-    #   PUT FILE ONTO REMOTE SERVERE
+    #   PUT FILE ONTO REMOTE SERVER
 
     def upload_file(self, path):
         return
-        
+    
+    #————————————————————————————————————————————————————————————————
+    #   CREATE NEW DIRECTORY
+    def mkdir(self, dir_name, remote=True):
+        if remote:
+            self._ftp.mkd(dir_name)
+        else:
+            os.mkdir(dir_name)
+            
     #————————————————————————————————————————————————————————————————
     #   INIT
     
