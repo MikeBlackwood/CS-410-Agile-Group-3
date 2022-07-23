@@ -1,4 +1,5 @@
 import os
+import sys
 
 #————————————————————————————————————————————————————————————————————————
 #   MAIN
@@ -21,18 +22,30 @@ def main():
         
         elif id == kMenuID_connect:
             url = menu.get_ftp_url()
+            connected = False
             
-            try:
-              username = input(menu.left_margin() + 'Enter username (or press Enter for anonymous) > ')
-              if username != '':
-                  password = input(menu.left_margin() + 'Enter password > ')
-              else:
-                  username = None
-                  password = None
-              ftp.connect(url, username, password)
-            except:
-                print('Error. No luck.')
-        
+            num_attempts = 0
+            while not connected:
+                num_attempts += 1
+                try:
+                    username = input(menu.left_margin() + 'Enter username (or press Enter for anonymous) > ')
+                    if username != '':
+                        password = input(menu.left_margin() + 'Enter password > ')
+                    else:
+                        username = None
+                        password = None
+                    if ftp.connect(url, username, password):
+                        connected = True
+                except:
+                    print('Error. No luck.')
+                    
+                if not connected:
+                    if num_attempts < 3:
+                        print(menu.left_margin() + 'Unsuccessful.')
+                    else:
+                        menu.show_error(f'Three unsuccessful attempts. Time to quit.')
+                        sys.exit()
+
         elif id == kMenuID_connect_rand:
             ftp.connect(None)
         
