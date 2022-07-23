@@ -23,7 +23,13 @@ def main():
             url = menu.get_ftp_url()
             
             try:
-                ftp.connect(url)
+              username = input(menu.left_margin() + 'Enter username (or press Enter for anonymous) > ')
+              if username != '':
+                  password = input(menu.left_margin() + 'Enter password > ')
+              else:
+                  username = None
+                  password = None
+              ftp.connect(url, username, password)
             except:
                 print('Error. No luck.')
         
@@ -395,7 +401,7 @@ class AgileFTP:
     #   If called with url=None, ask the user for an FTP server URL.
     #   Return True if connection is successful
     
-    def connect(self, url=None):
+    def connect(self, url=None, username=None, password=None):
         
         success = False
         if url == None:
@@ -403,7 +409,7 @@ class AgileFTP:
         
         try:
             self._ftp = self.FTP(url)
-            self._ftp.login()
+            self._ftp.login(username, password)
             self._url = url
             success = True
         except:
