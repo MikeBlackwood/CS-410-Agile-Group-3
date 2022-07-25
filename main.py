@@ -1,5 +1,6 @@
 import os
 import sys
+from tqdm import tqdm
 
 #————————————————————————————————————————————————————————————————————————
 #   MAIN
@@ -118,10 +119,21 @@ def main():
         elif id == kMenuID_download:
             print()
             print()
-            input(menu.left_margin() + 'To be implemented > ')
-            # example: with open('README', 'wb') as fp:
-            #              result = ftp.retrbinary('RETR README', fp.write)
-        
+            path=input(menu.left_margin() + 'File(s) to  download > ')
+            result=ftp.get_files(path)
+            path.strip(" ")
+            files=path.split(',')
+            try:
+                for f in files:
+                    res=ftp.get_files(f)
+                    if(res):
+                        continue
+                    else:
+                        menu.show_error(f'Cannot find {f} in working directory.')
+                        break
+            except:
+                menu.show_error(f'Cannot download {path}.')
+
         else:
             pass # unknown menu item
 
@@ -275,6 +287,8 @@ class FTP_Menu:
             self.items.append((i, kMenuID_rem_list, 'upload file(s)', ()))
             i+=1
 
+        self.items.append((i, kMenuID_download , 'download file(s)', ()))
+        i+=1
         
         self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
 
@@ -538,7 +552,31 @@ class AgileFTP:
 
     def upload_file(self, path):
         return
-        
+    #————————————————————————————————————————————————————————————————
+    #   GET FILES FROM REMOTE SERVER
+    
+    #Function to check if the given file exists or not
+    def is_file(self,dfile):
+        names = self._ftp.nlst()
+        if dfile in names:
+            return True
+        else:
+            return False
+    #Downloading files                    
+    def get_files(self, f):
+        if (self.is_file(f)):
+            with open(f, 'wb') as fd:
+                total = self._ftp.size(f)
+                with tqdm(total=total, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
+                    def cb(data):
+                        pbar.update(len(data))
+                        fd.write(data)
+                self._ftp.retrbinary('RETR {}'.format(f), cb)
+            res=1
+        else:
+            res=0
+            
+        return res    
     #————————————————————————————————————————————————————————————————
     #   INIT
     
