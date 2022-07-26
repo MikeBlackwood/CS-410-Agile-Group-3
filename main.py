@@ -1,7 +1,7 @@
 import os
 import sys
 from tqdm import tqdm
-
+import paramiko
 #————————————————————————————————————————————————————————————————————————
 #   MAIN
 
@@ -96,7 +96,7 @@ def main():
 
         elif id == kMenuID_loc_list or id == kMenuID_rem_list:
             is_remote = (id == kMenuID_rem_list)
-
+            
             lines = ftp.get_file_list(remote=is_remote)
             print()
             print()
@@ -108,19 +108,29 @@ def main():
         elif id == kMenuID_upload:
             print()
             print()
-            path = input(menu.left_margin() + 'File to upload > ')
+            lines = ftp.get_file_list(remote=False)
+            for l in lines:
+                print(menu.left_margin() + l)
+            
+            path = input(menu.left_margin() + 'File(s) to upload > ')
+            path.strip(" ")
+            files=path.split(',')
             try:
-                result = ftp.upload_file(path, remote = is_remote)
+                for f in files:
+                    res = ftp.upload_file(f)
+                    if(res):
+                        continue
+                    else:
+                        menu.show_error(f'Cannot find {f} in working directory.')
+                        break
             except:
-                menu.show_error(f'Cannot delete {path}.')
-
-            input(menu.left_margin() + 'To be implemented > ')
+                menu.show_error(f'Cannot upload {path}.')
         
         elif id == kMenuID_download:
             print()
             print()
             path=input(menu.left_margin() + 'File(s) to  download > ')
-            result=ftp.get_files(path)
+            # result=ftp.get_files(path)
             path.strip(" ")
             files=path.split(',')
             try:
@@ -282,13 +292,12 @@ class FTP_Menu:
         # File transfer operations
         if ftp._ftp != None:
             self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
-            self.items.append((0, kMenuID_rem_label, f'TRANSFER:{loc_dir} BETWEEN {rem_dir} ', (kMenuFlag_disabled)))
+            self.items.append((0, kMenuID_rem_label, f'TRANSFER: BETWEEN {loc_dir} AND {rem_dir} ', (kMenuFlag_disabled)))
             self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
-            self.items.append((i, kMenuID_rem_list, 'upload file(s)', ()))
+            self.items.append((i, kMenuID_upload, 'upload file(s)', ()))
             i+=1
-
-        self.items.append((i, kMenuID_download , 'download file(s)', ()))
-        i+=1
+            self.items.append((i, kMenuID_download , 'download file(s)', ()))
+            i+=1
         
         self.items.append((0, kMenuID_separator, '-', (kMenuFlag_separator)))
 
@@ -550,8 +559,16 @@ class AgileFTP:
     #————————————————————————————————————————————————————————————————
     #   PUT FILE ONTO REMOTE SERVERE
 
-    def upload_file(self, path):
-        return
+    def upload_file(self,path):
+        
+        names = os.listdir()
+        if path in names:
+            with open(path, "rb") as file:
+                self._ftp.storbinary(f"STOR {path}", file)
+            res = 1
+        else:
+            res = 0
+        return res
     #————————————————————————————————————————————————————————————————
     #   GET FILES FROM REMOTE SERVER
     
