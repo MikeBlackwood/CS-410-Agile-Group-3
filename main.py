@@ -17,7 +17,7 @@ def main():
         datefmt='%m/%d/%Y %H:%M:%S',
         encoding='utf-8', 
         level=logging.DEBUG)
-    logging.info('FTP client started')    
+    logging.info('====FTP client started====')    
 
     # get a menu and run it once
 
@@ -27,11 +27,13 @@ def main():
     while not done:
         menu.draw(ftp)
         id = menu.input()
+        # Quit 
         if id == kMenuID_quit:
             ftp.disconnect()
             done = True
-            logging.info('FTP client quit')  
+            logging.info('====FTP client quit====')  
 
+        # Connect to FTP server 
         elif id == kMenuID_connect:
             url = menu.get_ftp_url()
             connected = False
@@ -48,26 +50,31 @@ def main():
                         password = None
                     if ftp.connect(url, username, password):
                         connected = True
-                        logging.info('Connect to FTP Server - Sucessfully connected')
+                        logging.info('Connect to FTP server - Sucessfully connected')
                 except:
                     print('Error. No luck.')
                     
                 if not connected:
                     if num_attempts < 3:
                         print(menu.left_margin() + 'Unsuccessful.')
-                        logging.info('Connect to FTP Server - Wrong info entered')
+                        logging.info('Connect to FTP server - Wrong info entered')
                     else:
                         menu.show_error(f'Three unsuccessful attempts. Time to quit.')
-                        logging.info('Connect to FTP Server - Wrong info entered')
-                        logging.info('Connect to FTP Server - Three failed attempts')
+                        logging.info('Connect to FTP server - Wrong info entered')
+                        logging.info('Connect to FTP server - Three failed attempts')
                         sys.exit()                
 
+        # Connect to random FTP server 
         elif id == kMenuID_connect_rand:
             ftp.connect(None)
+            logging.info('Connect to random FTP server')
         
+        # Disconnect 
         elif id == kMenuID_disconnect:
             ftp.disconnect()
+            logging.info('Disconnect from FTP server')
         
+        # Change directory 
         elif id == kMenuID_loc_cwd or id == kMenuID_rem_cwd:
             is_remote = (id == kMenuID_rem_cwd)
             print()
@@ -75,9 +82,12 @@ def main():
             path = input(menu.left_margin() + 'New path (or “..”) > ')
             try:
                 ftp.set_path(path, remote=is_remote)
+                logging.info('Moved to %s', path)
             except:
                 menu.show_error(f'Cannot move to {path}.')
+                logging.info('Failed to move to %s', path)
         
+        # Rename file 
         elif id == kMenuID_loc_ren or id == kMenuID_rem_ren:
             is_remote = (id == kMenuID_rem_ren)
             print()
@@ -86,9 +96,12 @@ def main():
             new_name = input(menu.left_margin() + 'New name > ')
             try:
                 ftp.rename(path, new_name, remote=is_remote)
+                logging.info('Renamed %s to %s', curr_name, new_name)
             except:
                 menu.show_error(f'Cannot rename “{curr_name}” to “{new_name}.”')
-                
+                logging.info('Failed to rename %s to %s', curr_name, new_name)
+
+        # Make new directory         
         elif id == kMenuID_loc_mkdir or id == kMenuID_rem_mkdir:
             is_remote = (id == kMenuID_rem_mkdir)
             print()
@@ -96,9 +109,12 @@ def main():
             dir_name = input(menu.left_margin() + 'New directory name > ')
             #try:
             #    ftp.mkdir(dir_name, remote=is_remote)
+            #    logging.info('Made new directory: %s', dir_name)
             #except:
             #    menu.show_error(f'Cannot make directory “{dir_name}”.')
+            #    logging.info('Failed to make new directory: %s, dir_name)
 
+        # Remove file 
         elif id == kMenuID_loc_rm or id == kMenuID_rem_rm:
             is_remote = (id == kMenuID_rem_rm)
             print()
@@ -106,9 +122,12 @@ def main():
             path = input(menu.left_margin() + 'File to remove > ')
             try:
                 result = ftp.delete(path, remote=is_remote)
+                logging.info('Deleted %s', path)
             except:
                 menu.show_error(f'Cannot delete {path}.')
+                logging.info('Failed to delete %s', path)
 
+        # List files and directories 
         elif id == kMenuID_loc_list or id == kMenuID_rem_list:
             is_remote = (id == kMenuID_rem_list)
             
@@ -118,8 +137,10 @@ def main():
             for l in lines:
                 print(menu.left_margin() + l)
             print()
+            logging.info('Listed files')
             input(menu.left_margin() + 'Press Return to continue > ')
         
+        # Upload files 
         elif id == kMenuID_upload:
             print()
             print()
@@ -134,13 +155,16 @@ def main():
                 for f in files:
                     res = ftp.upload_file(f)
                     if(res):
+                        logging.info('Uploaded %s', f)
                         continue
                     else:
                         menu.show_error(f'Cannot find {f} in working directory.')
+                        logging.info('Failed to upload %s, no such file', f)
                         break
             except:
                 menu.show_error(f'Cannot upload {path}.')
         
+        # Download files 
         elif id == kMenuID_download:
             print()
             print()
@@ -152,14 +176,17 @@ def main():
                 for f in files:
                     res=ftp.get_files(f)
                     if(res):
+                        logging.info('Downloaded %s', f)
                         continue
                     else:
                         menu.show_error(f'Cannot find {f} in working directory.')
+                        logging.info('Failed to download %s, no such file', f)
                         break
             except:
                 menu.show_error(f'Cannot download {path}.')
 
         else:
+            logging.info('Unknown menu item')
             pass # unknown menu item
 
     menu.clear_screen()
