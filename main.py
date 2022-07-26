@@ -2,13 +2,23 @@ import os
 import sys
 from tqdm import tqdm
 import paramiko
+import logging 
 #————————————————————————————————————————————————————————————————————————
 #   MAIN
 
 def main():
     # set up our ftp client class
     ftp = AgileFTP()
-    
+
+    # set up logging 
+    logging.basicConfig(
+        filename='history.log', 
+        format='%(asctime)s %(message)s',
+        datefmt='%m/%d/%Y %H:%M:%S',
+        encoding='utf-8', 
+        level=logging.DEBUG)
+    logging.info('FTP client started')    
+
     # get a menu and run it once
 
     menu = FTP_Menu()
@@ -20,7 +30,8 @@ def main():
         if id == kMenuID_quit:
             ftp.disconnect()
             done = True
-        
+            logging.info('FTP client quit')  
+
         elif id == kMenuID_connect:
             url = menu.get_ftp_url()
             connected = False
@@ -37,15 +48,19 @@ def main():
                         password = None
                     if ftp.connect(url, username, password):
                         connected = True
+                        logging.info('Connect to FTP Server - Sucessfully connected')
                 except:
                     print('Error. No luck.')
                     
                 if not connected:
                     if num_attempts < 3:
                         print(menu.left_margin() + 'Unsuccessful.')
+                        logging.info('Connect to FTP Server - Wrong info entered')
                     else:
                         menu.show_error(f'Three unsuccessful attempts. Time to quit.')
-                        sys.exit()
+                        logging.info('Connect to FTP Server - Wrong info entered')
+                        logging.info('Connect to FTP Server - Three failed attempts')
+                        sys.exit()                
 
         elif id == kMenuID_connect_rand:
             ftp.connect(None)
