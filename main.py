@@ -2,18 +2,9 @@ import const
 from helper_func import clear_screen
 from ftp_menu import FTP_Menu
 from agile_ftp import AgileFTP
-#————————————————————————————————————————————————————————————————————————
-#   CLEAR SCREEN
+
 
 clear_screen()
-
-#————————————————————————————————————————————————————————————————————————
-#   AGILE FTP class
-#
-#   We really want to move this into another module. Just working in the
-#   main.py file for now though.
-
-
 
 if __name__ == '__main__':
     # set up our ftp client class
@@ -118,3 +109,6 @@ if __name__ == '__main__':
             pass # unknown menu item
 
     clear_screen()
+
+if __name__ == '__main__':
+    main()
