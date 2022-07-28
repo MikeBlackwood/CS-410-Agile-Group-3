@@ -78,7 +78,6 @@ class AgileFTP:
     def get_files(self, f):
         if (self.is_file(f)):
             with open(f, 'wb') as fd:
-                breakpoint()
                 total = self._ftp.size(f)
                 with tqdm(total=total, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
                     def cb(data):
