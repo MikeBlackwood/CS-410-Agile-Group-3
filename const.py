@@ -18,12 +18,14 @@ kMenuID_disconnect  = 'disconnect'  # disconnect from FTP server
 kMenuID_loc_label   = 'LOCAL'       # just a label
 kMenuID_loc_list    = 'loc_list'    # list files in local working directory
 kMenuID_loc_cwd     = 'loc_cwd'     # change local working directory
+kMenuID_loc_ren     = 'loc_ren'     # rename local file or directory
 kMenuID_loc_mkdir   = 'loc_mkdir'   # create local directory
 kMenuID_loc_rm      = 'loc_rm'      # delete local file or directory
 # Remote directory operations
 kMenuID_rem_label   = 'REMOTE'      # just a label
 kMenuID_rem_list    = 'rem_list'    # list files in remote working directory
 kMenuID_rem_cwd     = 'rem_cwd'     # change remote working directory
+kMenuID_rem_ren     = 'rem_ren'     # rename remote file or directory
 kMenuID_rem_mkdir   = 'rem_mkdir'   # create remote directory
 kMenuID_rem_rm      = 'rem_rm'      # delete remote file or directory
 # File transfer operations
