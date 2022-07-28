@@ -170,7 +170,7 @@ class FTP_Menu:
 
     def get_input(self, prompt, private=False):
         if private:
-            return getpass.getpass(self._left_marge + prompt=prompt)
+            return getpass.getpass(prompt=self._left_marge+prompt)
         else:
             return input(self._left_marge + prompt)
         

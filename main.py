@@ -6,6 +6,13 @@ from helper_func import clear_screen
 from ftp_menu import FTP_Menu
 from agile_ftp import AgileFTP
 
+# Safe import, so we don't crash if keyring is not installed
+try:
+    import keyring
+except:
+    keyring = None
+
+
 #————————————————————————————————————————————————————————————————————————
 #   MAIN
 
@@ -38,13 +45,21 @@ def main():
                 try:
                     username = menu.get_username()
                     if username != '':
-                        password = menu.get_password()
+
+                        try:
+                            password = keyring.get_password(url, username)
+                        except:
+                            password = None
+                        if password == None:
+                            password = menu.get_password()
                     else:
                         username = None
                         password = None
                     
                     if ftp.connect(url, username, password):
                         connected = True
+                    if keyring is not None:
+                        keyring.set_password(url, username, password)
                 except:
                     menu.show_line('Error. No luck.')
                 if not connected:
