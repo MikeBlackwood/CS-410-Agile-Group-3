@@ -1,11 +1,9 @@
-import const
-from helper_func import clear_screen
-
 #————————————————————————————————————————————————————————————————————————
 #   FTP MENU class
 #
-
-
+import const
+from helper_func import clear_screen
+import getpass
 
 class FTP_Menu:
     import os
@@ -23,7 +21,6 @@ class FTP_Menu:
     #   POPULATE ITEMS
 
     def populate_items(self, ftp):
-        import os
 
         # The menu is a list. Each menu item comprises a 1-based index,
         # ID, display name, and list of flags.
@@ -42,7 +39,7 @@ class FTP_Menu:
             
         # Local options
         self.items.append((0, const.kMenuID_separator, '-', (const.kMenuFlag_separator)))
-        loc_dir = self._short_path_name(os.getcwd())
+        loc_dir = self._short_path_name(self.os.getcwd())
         self.items.append((0, const.kMenuID_loc_label, f'LOCAL: {loc_dir}', (const.kMenuFlag_disabled)))
         self.items.append((0, const.kMenuID_separator, '-', (const.kMenuFlag_separator)))
         self.items.append((i, const.kMenuID_loc_list, 'List files and directories...', ()))
@@ -171,8 +168,11 @@ class FTP_Menu:
     #————————————————————————————————————————————————————————————————
     #   GET INPUT
 
-    def get_input(self, prompt):
-        return input(self._left_marge + prompt)
+    def get_input(self, prompt, private=False):
+        if private:
+            return getpass.getpass(self._left_marge + prompt=prompt)
+        else:
+            return input(self._left_marge + prompt)
         
     #————————————————————————————————————————————————————————————————
     #   GET CHOICE
@@ -213,7 +213,7 @@ class FTP_Menu:
     #   GET PASSWORD
     def get_password(self):
         print()
-        return self.get_input('Enter password > ')
+        return self.get_input('Enter password > ', private=True)
 
     #————————————————————————————————————————————————————————————————
     #   INITIALIZER
