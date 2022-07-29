@@ -36,6 +36,9 @@ class AgileFTP:
             self._ftp.login(username, password)
             self._url = url
             success = True
+            # Switch to binary mode to avoid file corruption and so we
+            # can get file sizes (unsupported in ASCII mode).
+            self._ftp.sendcmd("TYPE I")
         except:
             self._ftp = None
             self._url = None
@@ -78,11 +81,13 @@ class AgileFTP:
     def get_files(self, f):
         if (self.is_file(f)):
             with open(f, 'wb') as fd:
-                total = self._ftp.size(f)
-                with tqdm(total=total, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
-                    def cb(data):
+                total = self.size(f)
+                if total != None:
+                    pbar = tqdm(total=total, unit='B', unit_scale=True, unit_divisor=1024)
+                def cb(data):
+                    if total != None:
                         pbar.update(len(data))
-                        fd.write(data)
+                    fd.write(data)
                 self._ftp.retrbinary('RETR {}'.format(f), cb)
             res=1
         else:
@@ -107,15 +112,26 @@ class AgileFTP:
             # if you can't read the contents of a folder, you probably
             # shouldn't be able to delete it! So that might be okay.
             #
-            try:
-                self._ftp.size(path)
-            except:
-                return True  # If we couldn't get a size, it's a directory
+            s = self.size(path)
+            if s == None:
+                return True # If we couldn't get a size, it's (probably) a directory
+            else:
+                return False
         else:
             return os.path.isdir(path)
-        
-        return False
 
+    #————————————————————————————————————————————————————————————————
+    #   SIZE
+    
+    def size(self, path, remote=True):
+        if remote:
+            try:
+                return self._ftp.size(path)
+            except:
+                return None
+        else:
+            return os.path.size(path)
+            
     #————————————————————————————————————————————————————————————————
     #   SET PATH
 
@@ -161,10 +177,7 @@ class AgileFTP:
             names = self._ftp.nlst()
             sizes = []
             for f in names:
-                try:
-                    sizes.append(self._ftp.size(f))
-                except:
-                    sizes.append(None) # Directories [generally] have no size
+                sizes.append(self.size(f)) # None if unknown or a directory
         else:
             names = os.listdir()
             sizes = [os.stat(f).st_size for f in names]
