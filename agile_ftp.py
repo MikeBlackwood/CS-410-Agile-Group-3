@@ -7,9 +7,42 @@
 import os
 import random
 from helper_func import readable_size_string
+import ftplib
 
 class AgileFTP:
-    from ftplib import FTP
+    # ————————————————————————————————————————————————————————————————
+    #   INIT
+
+    def __init__(self, url=None, ftp=None):
+        '''
+            Initialize everything to a safe starting point. There's no
+            concept of a saved state, to pick up in the next session,
+            for now.
+        '''
+        if(ftp is None):
+            self._ftp = ftplib.FTP()
+
+        self._url = url
+        self._ftp = ftp
+        # Some freely accessible FTP sites, from https://www.mmnt.net
+        self._public_ftp_urls = ['ftp.us.debian.org',
+                                 'ftp.coreftp.com',
+                                 'ftp.be.debian.org',
+                                 'ftp.menandmice.com',
+                                 'ftp.integra-s.com',
+                                 'tp.kernel.ee',
+                                 'ftp3.za.freebsd.org',
+                                 'ftp.notepager.net',
+                                 'ftp.getright.com',
+                                 'ftp.europeonline.net',
+                                 'ftp.dungeoncrawl.org',
+                                 'ftp.openusenet.org',
+                                 'ftp.gps.caltech.edu',
+                                 'ftp.cc.gatech.edu',
+                                 'ftp.logitech.com',
+                                 'ftp-archive.freebsd.org',
+                                 'ftp.coreftp.com',
+                                 ]
 
     # ————————————————————————————————————————————————————————————————
     #   RANDOM FTP SERVER
@@ -26,13 +59,11 @@ class AgileFTP:
     #   Return True if connection is successful
 
     def connect(self, url=None, username=None, password=None):
-        
         success = False
         if url == None:
             url = self.random_ftp_server()
         
         try:
-            self._ftp = self.FTP(url)
             self._ftp.login(username, password)
             self._url = url
             success = True
@@ -50,9 +81,12 @@ class AgileFTP:
 
     def disconnect(self):
         if self._ftp != None:
-            self._ftp.quit()
+            value = self._ftp.quit()
             self._ftp = None
             self._url = None
+            return value
+        if self._ftp == None:
+            return 'Not connected'
 
     #————————————————————————————————————————————————————————————————
     #   REM_DIR
@@ -220,35 +254,3 @@ class AgileFTP:
             self._ftp.mkd(dir_name)
         else:
             os.mkdir(dir_name)
-
-    #————————————————————————————————————————————————————————————————
-    #   INIT
-
-    def __init__(self):
-        '''
-            Initialize everything to a safe starting point. There's no
-            concept of a saved state, to pick up in the next session,
-            for now.
-        '''
-        self._url = None
-        self._ftp = None
-
-        # Some freely accessible FTP sites, from https://www.mmnt.net
-        self._public_ftp_urls = ['ftp.us.debian.org',
-                                 'ftp.coreftp.com',
-                                 'ftp.be.debian.org',
-                                 'ftp.menandmice.com',
-                                 'ftp.integra-s.com',
-                                 'tp.kernel.ee',
-                                 'ftp3.za.freebsd.org',
-                                 'ftp.notepager.net',
-                                 'ftp.getright.com',
-                                 'ftp.europeonline.net',
-                                 'ftp.dungeoncrawl.org',
-                                 'ftp.openusenet.org',
-                                 'ftp.gps.caltech.edu',
-                                 'ftp.cc.gatech.edu',
-                                 'ftp.logitech.com',
-                                 'ftp-archive.freebsd.org',
-                                 'ftp.coreftp.com',
-                                 ]
