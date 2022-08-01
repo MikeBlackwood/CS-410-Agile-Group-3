@@ -116,7 +116,7 @@ def main():
             menu.get_input('Press Return to continue > ')
         
         elif id == const.kMenuID_loc_search:
-            path = menu.get_input('File to search > ')
+            path = menu.get_input('Name of the file to search > ')
             try: 
                 res = ftp.search_loc_file(path)
                 print('')
