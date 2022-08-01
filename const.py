@@ -17,6 +17,7 @@ kMenuID_disconnect  = 'disconnect'  # disconnect from FTP server
 # Local directory operations
 kMenuID_loc_label   = 'LOCAL'       # just a label
 kMenuID_loc_list    = 'loc_list'    # list files in local working directory
+kMenuID_loc_search  = 'loc_search'  # search for file in local working directory
 kMenuID_loc_cwd     = 'loc_cwd'     # change local working directory
 kMenuID_loc_ren     = 'loc_ren'     # rename local file or directory
 kMenuID_loc_mkdir   = 'loc_mkdir'   # create local directory

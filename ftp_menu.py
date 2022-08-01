@@ -52,6 +52,8 @@ class FTP_Menu:
         i+=1
         self.items.append((i, const.kMenuID_loc_rm, 'Delete...', ()))
         i+=1
+        self.items.append((i, const.kMenuID_loc_search, 'Search for a file...', ()))
+        i+=1
 
         # Remote options
         if ftp._ftp != None:

@@ -7,6 +7,7 @@
 import os
 import random
 from helper_func import readable_size_string
+import fnmatch
 
 class AgileFTP:
     from ftplib import FTP
@@ -220,6 +221,18 @@ class AgileFTP:
             self._ftp.mkd(dir_name)
         else:
             os.mkdir(dir_name)
+
+    #————————————————————————————————————————————————————————————————
+    #   SEARCH FILES ON LOCAL MACHINE
+
+    def search_loc_file(self,path):
+        names = os.listdir()
+        if path in names:
+            res = 1 
+            
+        else:
+            res = 0
+        return res
 
     #————————————————————————————————————————————————————————————————
     #   INIT
