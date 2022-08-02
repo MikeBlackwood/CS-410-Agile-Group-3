@@ -6,6 +6,7 @@ from helper_func import clear_screen
 from ftp_menu import FTP_Menu
 from agile_ftp import AgileFTP
 
+
 # Safe import, so we don't crash if keyring is not installed
 try:
     import keyring
@@ -113,6 +114,20 @@ def main():
             lines = ftp.get_file_list(remote=is_remote)
             menu.show_list(lines)
             menu.get_input('Press Return to continue > ')
+        
+        elif id == const.kMenuID_loc_search:
+            path = menu.get_input('Name of the file to search > ')
+            try: 
+                res = ftp.search_loc_file(path)
+                print('')
+                if res == 1 :
+                    menu.show_line(f'{path} has been found')
+                    menu.get_input('Press Return to continue > ')
+                else:
+                    menu.show_error(f'Cannot find {path}.') 
+            except:
+                menu.show_error(f'Cannot find {path}.')
+
 
         elif id == const.kMenuID_upload:
             lines = ftp.get_file_list(remote=False)
