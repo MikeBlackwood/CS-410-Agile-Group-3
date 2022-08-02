@@ -115,10 +115,11 @@ def main():
             menu.show_list(lines)
             menu.get_input('Press Return to continue > ')
         
-        elif id == const.kMenuID_loc_search:
+        elif id == const.kMenuID_loc_search or id == const.kMenuID_rem_search:
+            is_remote = (id == const.kMenuID_rem_search)
             path = menu.get_input('Name of the file to search > ')
             try: 
-                res = ftp.search_loc_file(path)
+                res = ftp.search_file(path,remote=is_remote)
                 print('')
                 if res == 1 :
                     menu.show_line(f'{path} has been found')
@@ -127,7 +128,6 @@ def main():
                     menu.show_error(f'Cannot find {path}.') 
             except:
                 menu.show_error(f'Cannot find {path}.')
-
 
         elif id == const.kMenuID_upload:
             lines = ftp.get_file_list(remote=False)
