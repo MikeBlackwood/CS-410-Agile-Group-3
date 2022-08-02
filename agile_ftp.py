@@ -12,6 +12,7 @@ import fnmatch
 
 
 class AgileFTP:
+    from ftplib import FTP
     # ————————————————————————————————————————————————————————————————
     #   INIT
 
@@ -66,6 +67,7 @@ class AgileFTP:
             url = self.random_ftp_server()
         
         try:
+            self._ftp = self.FTP(url)
             self._ftp.login(username, password)
             self._url = url
             success = True
@@ -251,19 +253,26 @@ class AgileFTP:
 
     #————————————————————————————————————————————————————————————————
     #   CREATE NEW DIRECTORY
+    
     def mkdir(self, dir_name, remote=True):
         if remote:
             self._ftp.mkd(dir_name)
         else:
             os.mkdir(dir_name)
-     #————————————————————————————————————————————————————————————————
-    #   SEARCH FILES ON LOCAL MACHINE
 
-    def search_loc_file(self,path):
-        names = os.listdir()
-        if path in names:
-            res = 1 
-            
+    #————————————————————————————————————————————————————————————————
+    #   SEARCH FOR A FILE
+
+    def search_file(self, path, remote=True):
+        if remote:
+            if self.is_file(path):
+                res = 1
+            else:
+                res = 0
         else:
-            res = 0
+            names = os.listdir()
+            if path in names:
+                res = 1 
+            else:
+                res = 0
         return res
