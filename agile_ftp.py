@@ -7,14 +7,11 @@
 import os
 import random
 from helper_func import readable_size_string
-from ftplib import FTP
-from tqdm import tqdm
-
+import ftplib
 import fnmatch
 
 
 class AgileFTP:
-    from ftplib import FTP
     # ————————————————————————————————————————————————————————————————
     #   INIT
 
@@ -24,8 +21,8 @@ class AgileFTP:
             concept of a saved state, to pick up in the next session,
             for now.
         '''
-        if (ftp is None):
-            self._ftp = FTP()
+        if(ftp is None):
+            self._ftp = ftplib.FTP()
 
         self._url = url
         self._ftp = ftp
@@ -67,9 +64,8 @@ class AgileFTP:
         success = False
         if url == None:
             url = self.random_ftp_server()
-        self._ftp = FTP(url)
+        
         try:
-            self._ftp = self.FTP(url)
             self._ftp.login(username, password)
             self._url = url
             success = True
@@ -94,59 +90,52 @@ class AgileFTP:
         if self._ftp == None:
             return 'Not connected'
 
-    # ————————————————————————————————————————————————————————————————
+    #————————————————————————————————————————————————————————————————
     #   REM_DIR
-
+    
     def rem_dir(self):
         wd = self._ftp.pwd()
         return self._ftp.pwd()
-
-    # ————————————————————————————————————————————————————————————————
+    
+    #————————————————————————————————————————————————————————————————
     #   IS FILE
     #
     #   Function to check if the given file exists or not
-
-    def is_file(self, dfile):
+    
+    def is_file(self,dfile):
         names = self._ftp.nlst()
         if dfile in names:
             return True
         else:
             return False
-
-    # ————————————————————————————————————————————————————————————————
+    
+    #————————————————————————————————————————————————————————————————
     #   GET FILES
     #
     #   Download files
-
+    
     def get_files(self, f):
         if (self.is_file(f)):
             with open(f, 'wb') as fd:
-<<<<<<< HEAD
                 total = self.size(f)
                 if total != None:
                     pbar = tqdm(total=total, unit='B', unit_scale=True, unit_divisor=1024)
-
                 def cb(data):
                     if total != None:
                         pbar.update(len(data))
                     fd.write(data)
-
                 self._ftp.retrbinary('RETR {}'.format(f), cb)
-            res = 1
-=======
-                self._ftp.retrbinary('RETR {}'.format(f))
             res=1
->>>>>>> e01ce81aa7c4bc4868446b8256c2a31706e79c58
         else:
-            res = 0
-
+            res=0
+            
         return res
-
-    # ————————————————————————————————————————————————————————————————
+        
+    #————————————————————————————————————————————————————————————————
     #   IS DIR?
-
+    
     def is_dir(self, path, remote):
-
+    
         if remote:
             #
             # DEBUG: It's possible that some FTP servers will return a size
@@ -161,15 +150,15 @@ class AgileFTP:
             #
             s = self.size(path)
             if s == None:
-                return True  # If we couldn't get a size, it's (probably) a directory
+                return True # If we couldn't get a size, it's (probably) a directory
             else:
                 return False
         else:
             return os.path.isdir(path)
 
-    # ————————————————————————————————————————————————————————————————
+    #————————————————————————————————————————————————————————————————
     #   SIZE
-
+    
     def size(self, path, remote=True):
         if remote:
             try:
@@ -178,8 +167,8 @@ class AgileFTP:
                 return None
         else:
             return os.path.size(path)
-
-    # ————————————————————————————————————————————————————————————————
+            
+    #————————————————————————————————————————————————————————————————
     #   SET PATH
 
     def set_path(self, path, remote=True):
@@ -188,19 +177,19 @@ class AgileFTP:
             self._ftp.cwd(path)
         else:
             os.chdir(path)
-
-    # ————————————————————————————————————————————————————————————————
+    
+    #————————————————————————————————————————————————————————————————
     #   RENAME
-
+    
     def rename(self, old_name, new_name, remote=True):
         if remote:
-            return self._ftp.rename(old_name, new_name)
+            self._ftp.rename(old_name, new_name)
         else:
-            return os.rename(old_name, new_name)
-
-    # ————————————————————————————————————————————————————————————————
+            os.rename(old_name, new_name)
+            
+    #————————————————————————————————————————————————————————————————
     #   DELETE
-
+    
     def delete(self, path, remote=True):
         if remote:
             # Is this a file or a directory?
@@ -210,47 +199,47 @@ class AgileFTP:
                 result = self._ftp.delete(path)
         else:
             result = os.delete(path)
-
+            
         return result
-
-    # ————————————————————————————————————————————————————————————————
+        
+    #————————————————————————————————————————————————————————————————
     #   GET FILE LIST
     #
     #   Return a list of strings, each of which describes one file,
     #   for display.
-
+    
     def get_file_list(self, remote=True):
         if remote:
             names = self._ftp.nlst()
             sizes = []
             for f in names:
-                sizes.append(self.size(f))  # None if unknown or a directory
+                sizes.append(self.size(f)) # None if unknown or a directory
         else:
             names = os.listdir()
             sizes = [os.stat(f).st_size for f in names]
-
-        if names == []:
+        
+        if names==[]:
             result = ['(empty directory)']
         else:
             result = []
             names = sorted(names)
             longest_name = max(names, key=len)
             max_len = len(longest_name)
-
-            for i, f in enumerate(names):
+            
+            for i,f in enumerate(names):
                 if sizes[i] == None:
                     size_str = ''
                 else:
                     size_str = readable_size_string(sizes[i])
                 result.append(f + ' ' * (max_len + 1 - len(f)) + '{: >8}'.format(size_str))
-
+        
         return result
-
-    # ————————————————————————————————————————————————————————————————
+    
+    #————————————————————————————————————————————————————————————————
     #   PUT FILE ONTO REMOTE SERVERE
 
-    def upload_file(self, path):
-
+    def upload_file(self,path):
+        
         names = os.listdir()
         if path in names:
             with open(path, "rb") as file:
@@ -260,42 +249,21 @@ class AgileFTP:
             res = 0
         return res
 
-    # ————————————————————————————————————————————————————————————————
+    #————————————————————————————————————————————————————————————————
     #   CREATE NEW DIRECTORY
-    
     def mkdir(self, dir_name, remote=True):
         if remote:
             self._ftp.mkd(dir_name)
         else:
             os.mkdir(dir_name)
-<<<<<<< HEAD
-
-    # ————————————————————————————————————————————————————————————————
+     #————————————————————————————————————————————————————————————————
     #   SEARCH FILES ON LOCAL MACHINE
 
-    def search_loc_file(self, path):
+    def search_loc_file(self,path):
         names = os.listdir()
         if path in names:
-            res = 1
-
+            res = 1 
+            
         else:
             res = 0
-=======
-
-    #————————————————————————————————————————————————————————————————
-    #   SEARCH FOR A FILE
-
-    def search_file(self, path, remote=True):
-        if remote:
-            if self.is_file(path):
-                res = 1
-            else:
-                res = 0
-        else:
-            names = os.listdir()
-            if path in names:
-                res = 1 
-            else:
-                res = 0
->>>>>>> e01ce81aa7c4bc4868446b8256c2a31706e79c58
         return res

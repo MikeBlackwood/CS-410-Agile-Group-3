@@ -1,9 +1,8 @@
 import ftplib
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from agile_ftp import AgileFTP
-import os
-from ftplib import FTP
+import ftplib
 
 class AgileFTPTests(unittest.TestCase):
 
@@ -49,67 +48,20 @@ class AgileFTPTests(unittest.TestCase):
         mock_ftp_lib.nlst.assert_called()
         self.assertFalse(return_val, "File with name is not found")
 
-    @patch('ftplib.FTP', autospec=True)
-    def test_get_files_false(self, mock_ftp_constructor):
-        mock_ftp_lib = mock_ftp_constructor.return_value
-        ftp = AgileFTP('localhost', mock_ftp_lib)
-        return_val = ftp.get_files("hello")
-        self.assertIs(return_val, 0, "File with name was found")
 
-    # @patch('ftplib.FTP', autospec=True)
-    # def test_get_files_true(self, mock_ftp_constructor):
-    #     mock_ftp_lib = mock_ftp_constructor.return_value
-    #     mock_ftp_lib.nlst.return_value = ["hello"]
-    #     ftp = AgileFTP("localhost", mock_ftp_lib)
-    #     return_val = ftp.get_files("hello")
-    #     mock_ftp_lib.nlist.assert_called()
-    #     self.assertIs(return_val, 0, "File with name was found")
+    def test_get_files_true(self):
+        assert False
 
-    @patch('ftplib.FTP', autospec=True)
-    def test_size_return_value(self, mock_ftp_constructor):
-        mock_ftp_lib = mock_ftp_constructor.return_value
-        mock_ftp_lib.size.return_value = 1024
-        ftp = AgileFTP('localhost', mock_ftp_lib)
-        return_val = ftp.size("/test/test.txt")
-        mock_ftp_lib.size.assert_called()
-        self.assertIs(return_val, 1024, "File didn't return value")
 
-    @patch('ftplib.FTP', autospec=True)
-    def test_size_failed(self, mock_ftp_constructor):
-        mock_ftp_lib = mock_ftp_constructor.return_value
-        mock_ftp_lib.size.return_value = None
-        ftp = AgileFTP('localhost', mock_ftp_lib)
-        return_val = ftp.size("/test/test.txt")
-        mock_ftp_lib.size.assert_called()
-        self.assertIs(return_val, None, "File returned unexpected value")
+    def test_get_file_false(self):
+        assert False
 
-    @patch('ftplib.FTP', autospec=True)
-    def test_is_dir_true(self, mock_ftp_constructor):
-        mock_ftp_lib = mock_ftp_constructor.return_value
-        mock_ftp_lib.size.return_value = None
-        ftp = AgileFTP('localhost', mock_ftp_lib)
-        return_from_call = ftp.is_dir('hello', remote=True)
-        mock_ftp_lib.size.assert_called()
-        self.assertIs(return_from_call, True, "Error in identifying folder")
+    def test_is_dir(self):
+        assert False
 
-    @patch('ftplib.FTP', autospec=True)
-    def test_is_dir_false(self, mock_ftp_constructor):
-        mock_ftp_lib = mock_ftp_constructor.return_value
-        mock_ftp_lib.size.return_value = 1024
-        ftp = AgileFTP('localhost', mock_ftp_lib)
-        return_from_call = ftp.is_dir('hello', remote=True)
-        mock_ftp_lib.size.assert_called()
-        self.assertIs(return_from_call, False, "Error in identifying folder")
 
-    @patch('ftplib.FTP', autospec=True)
-    def test_rename_server(self, mock_ftp_constructor):
-        mock_ftp_lib = mock_ftp_constructor.return_value
-        mock_ftp_lib.rename.return_value = 2
-        ftp = AgileFTP('localhost', mock_ftp_lib)
-        return_from_call = ftp.rename('hello', 'test', remote=True)
-        mock_ftp_lib.rename.assert_called()
-        self.assertIs(return_from_call, 2, "Error changing name")
-
+    def test_rename(self):
+        assert False
 
 
     def test_delete(self):
