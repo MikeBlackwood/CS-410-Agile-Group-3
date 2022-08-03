@@ -183,9 +183,9 @@ class AgileFTP:
     
     def rename(self, old_name, new_name, remote=True):
         if remote:
-            self._ftp.rename(old_name, new_name)
+            return self._ftp.rename(old_name, new_name)
         else:
-            os.rename(old_name, new_name)
+            return os.rename(old_name, new_name)
             
     #————————————————————————————————————————————————————————————————
     #   DELETE
