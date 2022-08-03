@@ -119,7 +119,7 @@ class AgileFTP:
     def get_files(self, f):
         if (self.is_file(f)):
             with open(f, 'wb') as fd:
-                self._ftp.retrbinary('RETR {}'.format(f), cb)
+                self._ftp.retrbinary('RETR {}'.format(f))
             res=1
         else:
             res=0
@@ -243,7 +243,7 @@ class AgileFTP:
         else:
             res = 0
         return res
-
+    
     #————————————————————————————————————————————————————————————————
     #   CREATE NEW DIRECTORY
     
