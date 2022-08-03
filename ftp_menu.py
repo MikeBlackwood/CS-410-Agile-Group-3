@@ -71,6 +71,8 @@ class FTP_Menu:
             i += 1
             self.items.append((i, const.kMenuID_rem_rm, 'Delete...', ()))
             i += 1
+            self.items.append((i, const.kMenuID_rem_search, 'Search for a file...', ()))
+            i += 1
 
             # File transfer operations
             self.items.append((0, const.kMenuID_separator, '-', (const.kMenuFlag_separator)))

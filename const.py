@@ -25,6 +25,7 @@ kMenuID_loc_rm      = 'loc_rm'      # delete local file or directory
 # Remote directory operations
 kMenuID_rem_label   = 'REMOTE'      # just a label
 kMenuID_rem_list    = 'rem_list'    # list files in remote working directory
+kMenuID_rem_search  = 'rem_search'  # search for file in remote working directory
 kMenuID_rem_cwd     = 'rem_cwd'     # change remote working directory
 kMenuID_rem_ren     = 'rem_ren'     # rename remote file or directory
 kMenuID_rem_mkdir   = 'rem_mkdir'   # create remote directory

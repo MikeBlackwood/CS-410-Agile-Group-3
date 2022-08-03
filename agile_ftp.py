@@ -14,6 +14,7 @@ import fnmatch
 
 
 class AgileFTP:
+    from ftplib import FTP
     # ————————————————————————————————————————————————————————————————
     #   INIT
 
@@ -68,6 +69,7 @@ class AgileFTP:
             url = self.random_ftp_server()
         self._ftp = FTP(url)
         try:
+            self._ftp = self.FTP(url)
             self._ftp.login(username, password)
             self._url = url
             success = True
@@ -119,6 +121,7 @@ class AgileFTP:
     def get_files(self, f):
         if (self.is_file(f)):
             with open(f, 'wb') as fd:
+<<<<<<< HEAD
                 total = self.size(f)
                 if total != None:
                     pbar = tqdm(total=total, unit='B', unit_scale=True, unit_divisor=1024)
@@ -130,6 +133,10 @@ class AgileFTP:
 
                 self._ftp.retrbinary('RETR {}'.format(f), cb)
             res = 1
+=======
+                self._ftp.retrbinary('RETR {}'.format(f))
+            res=1
+>>>>>>> e01ce81aa7c4bc4868446b8256c2a31706e79c58
         else:
             res = 0
 
@@ -255,11 +262,13 @@ class AgileFTP:
 
     # ————————————————————————————————————————————————————————————————
     #   CREATE NEW DIRECTORY
+    
     def mkdir(self, dir_name, remote=True):
         if remote:
             self._ftp.mkd(dir_name)
         else:
             os.mkdir(dir_name)
+<<<<<<< HEAD
 
     # ————————————————————————————————————————————————————————————————
     #   SEARCH FILES ON LOCAL MACHINE
@@ -271,4 +280,22 @@ class AgileFTP:
 
         else:
             res = 0
+=======
+
+    #————————————————————————————————————————————————————————————————
+    #   SEARCH FOR A FILE
+
+    def search_file(self, path, remote=True):
+        if remote:
+            if self.is_file(path):
+                res = 1
+            else:
+                res = 0
+        else:
+            names = os.listdir()
+            if path in names:
+                res = 1 
+            else:
+                res = 0
+>>>>>>> e01ce81aa7c4bc4868446b8256c2a31706e79c58
         return res
