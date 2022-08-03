@@ -119,13 +119,6 @@ class AgileFTP:
     def get_files(self, f):
         if (self.is_file(f)):
             with open(f, 'wb') as fd:
-                total = self.size(f)
-                if total != None:
-                    pbar = tqdm(total=total, unit='B', unit_scale=True, unit_divisor=1024)
-                def cb(data):
-                    if total != None:
-                        pbar.update(len(data))
-                    fd.write(data)
                 self._ftp.retrbinary('RETR {}'.format(f), cb)
             res=1
         else:
