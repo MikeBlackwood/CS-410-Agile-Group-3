@@ -119,7 +119,7 @@ class AgileFTP:
     def get_files(self, f):
         if (self.is_file(f)):
             with open(f, 'wb') as fd:
-                self._ftp.retrbinary('RETR {}'.format(f))
+                self._ftp.retrbinary(f"RETR {f}", fd.write)
             res=1
         else:
             res=0
