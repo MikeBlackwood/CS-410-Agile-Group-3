@@ -243,7 +243,7 @@ class AgileFTP:
         else:
             res = 0
         return res
-
+    
     #————————————————————————————————————————————————————————————————
     #   CREATE NEW DIRECTORY
     
