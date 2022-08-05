@@ -1,10 +1,11 @@
-import sys
-import os
-
 import const
+import logging 
+import os
+import sys
+from agile_ftp import AgileFTP
 from helper_func import clear_screen
 from ftp_menu import FTP_Menu
-from agile_ftp import AgileFTP
+
 
 
 # Safe import, so we don't crash if keyring is not installed
