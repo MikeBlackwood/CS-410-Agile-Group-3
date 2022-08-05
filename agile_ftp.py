@@ -205,7 +205,10 @@ class AgileFTP:
     
     def get_file_list(self, remote=True):
         if remote:
-            return self._ftp.retrlines('LIST')
+            names = self._ftp.nlst()
+            sizes = []
+            for f in names:
+                sizes.append(self.size(f)) # None if unknown or a directory
         else:
             names = os.listdir()
             sizes = [os.stat(f).st_size for f in names]
