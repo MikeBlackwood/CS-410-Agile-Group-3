@@ -31,10 +31,12 @@ def main():
         menu.draw(ftp)
         id = menu.get_choice()
         
+        # Quit
         if id == const.kMenuID_quit:
             ftp.disconnect()
             done = True
         
+        # Connet to FTP
         elif id == const.kMenuID_connect:
         
             url = menu.get_ftp_url()
@@ -70,12 +72,15 @@ def main():
                         menu.show_error(f'Three unsuccessful attempts. Time to quit.')
                         sys.exit()
 
+        # Connect to random 
         elif id == const.kMenuID_connect_rand:
             ftp.connect(None)
         
+        # Disconnect
         elif id == const.kMenuID_disconnect:
             ftp.disconnect()
         
+        # Change directory 
         elif id == const.kMenuID_loc_cwd or id == const.kMenuID_rem_cwd:
             is_remote = (id == const.kMenuID_rem_cwd)
             path = menu.get_input('New path (or “..”) > ')
@@ -84,6 +89,7 @@ def main():
             except:
                 menu.show_error(f'Cannot move to {path}.')
         
+        # Rename directory 
         elif id == const.kMenuID_loc_ren or id == const.kMenuID_rem_ren:
             is_remote = (id == const.kMenuID_rem_ren)
             curr_name = menu.get_input('File to rename > ')
@@ -93,6 +99,7 @@ def main():
             except:
                 menu.show_error(f'Cannot rename “{curr_name}” to “{new_name}.”')
         
+        # Make directory
         elif id == const.kMenuID_loc_mkdir or id == const.kMenuID_rem_mkdir:
             is_remote = (id == const.kMenuID_rem_mkdir)
             dir_name = menu.get_input('New directory name > ')
@@ -101,6 +108,7 @@ def main():
             except:
                menu.show_error(f'Cannot make directory “{dir_name}”.')
 
+        # Remove directory 
         elif id == const.kMenuID_loc_rm or id == const.kMenuID_rem_rm:
             is_remote = (id == const.kMenuID_rem_rm)
             path = menu.get_input('File to remove > ')
@@ -109,12 +117,14 @@ def main():
             except:
                 menu.show_error(f'Cannot delete {path}.')
 
+        # List directory 
         elif id == const.kMenuID_loc_list or id == const.kMenuID_rem_list:
             is_remote = (id == const.kMenuID_rem_list)
             lines = ftp.get_file_list(remote=is_remote)
             menu.show_list(lines)
             menu.get_input('Press Return to continue > ')
         
+        # Search for a file
         elif id == const.kMenuID_loc_search or id == const.kMenuID_rem_search:
             is_remote = (id == const.kMenuID_rem_search)
             path = menu.get_input('Name of the file to search > ')
@@ -129,6 +139,7 @@ def main():
             except:
                 menu.show_error(f'Cannot find {path}.')
 
+        # Upload 
         elif id == const.kMenuID_upload:
             lines = ftp.get_file_list(remote=False)
             menu.show_list(lines)
@@ -147,6 +158,7 @@ def main():
             except:
                 menu.show_error(f'Cannot upload {path}.')
         
+        #Download
         elif id == const.kMenuID_download:
             path = menu.get_input('File(s) to  download > ')
 
@@ -163,8 +175,9 @@ def main():
             except:
                 menu.show_error(f'Cannot download {path}.')
 
+        # Unkown menu item
         else:
-            pass # unknown menu item
+            pass 
 
     clear_screen()
 
