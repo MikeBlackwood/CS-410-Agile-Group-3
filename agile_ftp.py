@@ -22,9 +22,6 @@ class AgileFTP:
             concept of a saved state, to pick up in the next session,
             for now.
         '''
-        if ftp is None:
-            self._ftp = ftplib.FTP()
-
         self._url = url
         self._ftp = ftp
         # Some freely accessible FTP sites, from https://www.mmnt.net
