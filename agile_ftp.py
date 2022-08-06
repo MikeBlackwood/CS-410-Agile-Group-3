@@ -22,7 +22,7 @@ class AgileFTP:
             concept of a saved state, to pick up in the next session,
             for now.
         '''
-        if(ftp is None):
+        if ftp is None:
             self._ftp = ftplib.FTP()
 
         self._url = url
@@ -61,15 +61,21 @@ class AgileFTP:
     #   If called with url=None, ask the user for an FTP server URL.
     #   Return True if connection is successful
 
-    def connect(self, url=None, username=None, password=None):
+    def connect(self, url=None, port='21', username=None, password=None):
         success = False
         if url == None:
             url = self.random_ftp_server()
         
         try:
-            self._ftp = self.FTP(url)
+            try:
+                port = int(port)
+            except:
+                port = 21
+            self._ftp = self.FTP()
+            self._ftp.connect(url, port)
             self._ftp.login(username, password)
             self._url = url
+            
             success = True
             # Switch to binary mode to avoid file corruption and so we
             # can get file sizes (unsupported in ASCII mode).

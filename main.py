@@ -47,10 +47,10 @@ def main():
             done = True
             logging.info('====FTP client quit====') 
         
-        # Connet to FTP
+        # Connect to FTP
         elif id == const.kMenuID_connect:
-        
-            url = menu.get_ftp_url()
+            # User may optionally enter a port number after a ':'
+            (url, port) = menu.get_ftp_url()
             connected = False
             
             num_attempts = 0
@@ -70,7 +70,7 @@ def main():
                         username = None
                         password = None
                     
-                    if ftp.connect(url, username, password):
+                    if ftp.connect(url=url, port=port, username=username, password=password):
                         connected = True
                         logging.info('Connect to FTP server - Sucessfully connected')
                     if keyring is not None:

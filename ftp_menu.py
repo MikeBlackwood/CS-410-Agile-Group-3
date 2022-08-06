@@ -204,7 +204,11 @@ class FTP_Menu:
     def get_ftp_url(self):
         print()
         url = self.get_input('FTP site address > ')
-        return url
+        url_port = url.split(':')
+        if len(url_port) == 1:
+            return url, '21'
+        else:
+            return url_port[0], url_port[1]
 
     #————————————————————————————————————————————————————————————————
     #   GET USERNAME
