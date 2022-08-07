@@ -108,10 +108,10 @@ class AgileFTP:
     #   Function to check if the given file exists or not
     
     def is_file(self,dfile):
-        names = self._ftp.nlst()
-        if dfile in names:
-            return True
-        else:
+        try:
+            result = self._ftp.nlst(dfile)
+            return result == [dfile]
+        except:
             return False
     
     #————————————————————————————————————————————————————————————————
