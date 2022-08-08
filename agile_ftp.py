@@ -268,7 +268,7 @@ class AgileFTP:
 
     def search_file(self, path, remote=True):
         if remote:
-            if self.is_file(path):
+            if self.is_file(path) or self.is_dir(path, remote):
                 res = 1
             else:
                 res = 0
