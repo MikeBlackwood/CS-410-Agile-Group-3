@@ -78,8 +78,24 @@ class AgileFTPTests(unittest.TestCase):
 
     def test_mkdir(self):
         assert False
-
-
+   
+    @patch('ftplib.FTP', autospec=True)
+    def test_search_true(self, mock_ftp_constructor):
+        mock_ftp_lib = mock_ftp_constructor.return_value
+        mock_ftp_lib.nlst.return_value = ['test']
+        ftp = AgileFTP('localhost', mock_ftp_lib)
+        return_val = ftp.search_file('test', True)
+        mock_ftp_lib.nlst.assert_called()
+        self.assertIs(return_val, 1, "File has been found")
+    
+    @patch('ftplib.FTP', autospec=True)
+    def test_search_false(self, mock_ftp_constructor):
+        mock_ftp_lib = mock_ftp_constructor.return_value
+        mock_ftp_lib.nlst.return_value = ['test']
+        ftp = AgileFTP('localhost', mock_ftp_lib)
+        return_val = ftp.search_file('test2', True)
+        mock_ftp_lib.nlst.assert_called()
+        self.assertIs(return_val, 0, "File with name is not found")
 
 if __name__ == '__main__':
     unittest.main()
