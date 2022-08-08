@@ -268,9 +268,7 @@ class AgileFTP:
 
     def search_file(self, path, remote=True):
         if remote:
-            names = []
-            self._ftp.retrlines('LIST', lambda line: names.append(line.split()[-1]))
-            if path in names:
+            if self.is_file(path):
                 res = 1
             else:
                 res = 0
