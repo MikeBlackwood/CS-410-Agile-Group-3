@@ -160,11 +160,11 @@ def main():
                 print('')
                 if res == 1 :
                     menu.show_line(f'{path} has been found')
-                    logging.info('Search for and found %s', f)
+                    logging.info('Search for and found %s', path)
                     menu.get_input('Press Return to continue > ')
                 else:
                     menu.show_error(f'Cannot find {path}.') 
-                    logging.info('Searched for and did not find %s', f)
+                    logging.info('Searched for and did not find %s', path)
             except:
                 menu.show_error(f'Cannot find {path}.')
 

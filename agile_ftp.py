@@ -108,10 +108,10 @@ class AgileFTP:
     #   Function to check if the given file exists or not
     
     def is_file(self,dfile):
-        names = self._ftp.nlst()
-        if dfile in names:
-            return True
-        else:
+        try:
+            result = self._ftp.nlst(dfile)
+            return result == [dfile]
+        except:
             return False
     
     #————————————————————————————————————————————————————————————————
@@ -224,7 +224,10 @@ class AgileFTP:
             result = ['(empty directory)']
         else:
             result = []
-            names = sorted(names)
+            names_sizes = [(names[i], sizes[i]) for i in range(len(names))]
+            names_sizes = sorted(names_sizes, key=lambda y: y[0])
+            names = [ns[0] for ns in names_sizes]
+            sizes = [ns[1] for ns in names_sizes]
             longest_name = max(names, key=len)
             max_len = len(longest_name)
             
