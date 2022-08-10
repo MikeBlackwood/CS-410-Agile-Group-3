@@ -192,7 +192,7 @@ class AgileFTP:
         if remote:
             # Is this a file or a directory?
             if self.is_dir(path, remote):
-                result = self._ftp.rmdir(path)
+                result = self._ftp.rmd(path)
             else:
                 result = self._ftp.delete(path)
         else:
